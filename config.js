@@ -6,6 +6,6 @@
 // 這把 Publishable key 可以公開：資料庫有開 Row Level Security，
 // 它只能讀寫 fushenhuo_docs 這一張表（見 supabase/schema.sql）。
 window.SITE_CONFIG = {
-  supabaseUrl: "",
-  supabaseKey: ""
+  supabaseUrl: "https://wceexojfhfrmheoiqvnd.supabase.co",
+  supabaseKey: "sb_publishable_HBHirL9e63JHE7fjE7MGJQ_5EZ3xP-W"
 };
