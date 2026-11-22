@@ -289,42 +289,89 @@ function setAt(root, segs, val){
   if (val==null) delete o[k]; else o[k]=val;
 }
 
-/* ---------- 儲存層：有設定資料庫網址就存雲端，否則存在這台裝置 ---------- */
+/* ---------- 儲存層：有設定 Supabase 就存雲端，否則存在這台裝置 ----------
+   雲端資料表 fushenhuo_docs 一列存一個房間、一個視角、一個物件或一件家具，
+   path 是它在資料裡的位置（例如 rooms/study/views/door/items/c）。 */
+function applyDoc(root, path, doc){
+  const segs=String(path||'').split('/').filter(Boolean); if (!segs.length) return;
+  if (doc!==null && typeof doc!=='object') doc=null;
+  const meta = segs[0]==='rooms' && (segs.length===2 || segs.length===4);
+  if (!meta || doc===null){ setAt(root, segs, doc); return; }
+  let o=root;
+  for (const k of segs){ if (typeof o[k]!=='object' || o[k]===null) o[k]={}; o=o[k]; }
+  const keep = segs.length===2 ? 'views' : 'items';
+  for (const k of Object.keys(o)) if (k!==keep) delete o[k];
+  for (const [k,v] of Object.entries(doc)) if (k!==keep) o[k]=v;
+}
+function flattenDoc(path, value){
+  const p=path.split('/'), out=[];
+  if (value==null) return [[path,null]];
+  if (p[0]==='rooms' && p.length===2){
+    const meta=Object.assign({},value); delete meta.views; out.push([path,meta]);
+    for (const [vid,v] of Object.entries(value.views||{})) out.push(...flattenDoc(path+'/views/'+vid, v));
+  } else if (p[0]==='rooms' && p.length===4){
+    const meta=Object.assign({},value); delete meta.items; out.push([path,meta]);
+    for (const [id,it] of Object.entries(value.items||{})) out.push([path+'/items/'+id, it]);
+  } else out.push([path,value]);
+  return out;
+}
 const store = (function(){
-  const url = String((window.SITE_CONFIG||{}).databaseURL||'').trim().replace(/\/+$/,'');
-  const base = url ? url + '/fushenhuo' : null;
-  const LS = 'fushenhuo-data-v1';
+  const cfg=window.SITE_CONFIG||{};
+  const url=String(cfg.supabaseUrl||'').trim().replace(/\/+$/,''), key=String(cfg.supabaseKey||'').trim();
+  const remote=!!(url && key);
+  const LS='fushenhuo-data-v1', TABLE='fushenhuo_docs';
+  const LIB='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js';
+  let sb=null;
+  function client(){
+    if (sb) return Promise.resolve(sb);
+    return new Promise((res,rej)=>{
+      if (window.supabase) return res();
+      const el=document.createElement('script'); el.src=LIB; el.onload=()=>res(); el.onerror=()=>{ el.remove(); rej(new Error('library')); };
+      document.head.append(el);
+    }).then(()=>{ sb=window.supabase.createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}); return sb; });
+  }
   return {
-    remote: !!base,
+    remote,
     async load(){
-      if (!base){ try { return JSON.parse(localStorage.getItem(LS)); } catch(e){ return null; } }
-      const r = await fetch(base + '.json', {cache:'no-store'});
-      if (!r.ok) throw new Error('HTTP '+r.status);
-      return r.json();
+      if (!remote){ try { return JSON.parse(localStorage.getItem(LS)); } catch(e){ return null; } }
+      const c=await client();
+      const {data,error}=await c.from(TABLE).select('path,data');
+      if (error) throw error;
+      const root={};
+      for (const row of data||[]) applyDoc(root, row.path, row.data);
+      return root;
     },
     async set(path, value){
-      if (!base){ try { localStorage.setItem(LS, JSON.stringify(S.data)); } catch(e){} return; }
-      const opt = value==null ? {method:'DELETE'} : {method:'PUT', body:JSON.stringify(value)};
-      const r = await fetch(base + '/' + path + '.json', opt);
-      if (!r.ok) throw new Error('HTTP '+r.status);
+      if (!remote){ try { localStorage.setItem(LS, JSON.stringify(S.data)); } catch(e){} return; }
+      const c=await client(), docs=flattenDoc(path,value), now=new Date().toISOString();
+      const up=docs.filter(d=>d[1]!=null).map(d=>({path:d[0],data:d[1],updated_at:now})), del=docs.filter(d=>d[1]==null).map(d=>d[0]);
+      if (up.length){ const {error}=await c.from(TABLE).upsert(up); if (error) throw error; }
+      if (del.length){ const {error}=await c.from(TABLE).delete().in('path',del); if (error) throw error; }
     },
-    listen(onData, onState){
-      if (!base || !window.EventSource) return;
-      const es = new EventSource(base + '.json');
-      const handle = patch => e => { try { const m=JSON.parse(e.data); onData(m.path, m.data, patch); } catch(err){} };
-      es.addEventListener('put', handle(false));
-      es.addEventListener('patch', handle(true));
-      es.onopen = () => onState(true);
-      es.onerror = () => onState(false);
+    listen(onDoc, onReload, onState){
+      if (!remote || !sb) return;
+      let wasDown=false;
+      sb.channel('fushenhuo-docs')
+        .on('postgres_changes',{event:'*',schema:'public',table:TABLE}, p=>{
+          if (p.eventType==='DELETE'){ if (p.old && p.old.path) onDoc(p.old.path,null); }
+          else if (p.new && p.new.path) onDoc(p.new.path,p.new.data);
+        })
+        .subscribe(status=>{
+          if (status==='SUBSCRIBED'){ onState(true); if (wasDown){ wasDown=false; onReload(); } }
+          else { wasDown=true; onState(false); }
+        });
+      // 手機從背景回來時連線可能斷過，重新抓一次最新資料
+      document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) onReload(); });
     }
   };
 })();
 
-let syncErr=false, inflight=0, online=true;
+let syncErr=false, inflight=0, online=true, loading=store.remote;
 const pending = new Map();
 function setSync(){
   const el=$('#sync'); let cls='ok', txt='已同步，所有人可見';
   if (!store.remote){ cls='local'; txt='只存在這台裝置'; }
+  else if (loading){ cls=''; txt='連線中…'; }
   else if (syncErr || !online){ cls='error'; txt='連線中斷，重新連線中…'; }
   else if (pending.size || inflight){ cls=''; txt='儲存中…'; }
   el.className='sync '+cls; el.textContent=txt;
@@ -346,18 +393,23 @@ function mergeSeed(data){
     if (!data.rooms[rid]){ data.rooms[rid]=clone(room); writes.push('rooms/'+rid); continue; }
     const dr=data.rooms[rid]; if (!dr.views) dr.views={};
     for (const [vid,v] of Object.entries(room.views))
-      if (!dr.views[vid]){ dr.views[vid]=clone(v); writes.push('rooms/'+rid+'/views/'+vid); }
+      if (!okView(dr.views[vid])){ dr.views[vid]=clone(v); writes.push('rooms/'+rid+'/views/'+vid); }
   }
   return writes;
 }
+// 只顯示資料完整的房間與視角（雲端資料分批抵達時，尺寸還沒到的先不顯示）
+const sorted = o => Object.entries(o).filter(e=>e[1] && typeof e[1]==='object').sort((a,b)=>n(a[1].order)-n(b[1].order));
+const okView = v => !!v && n(v.width)>0 && n(v.height)>0;
+const viewsOf = r => sorted((r && r.views)||{}).filter(e=>okView(e[1]));
+const roomsOf = () => sorted(S.data.rooms||{}).filter(e=>viewsOf(e[1]).length);
 function fixSelection(){
-  const rooms=S.data.rooms||{};
-  if (!rooms[S.room]) S.room=sorted(rooms)[0][0];
-  const views=rooms[S.room].views||{};
-  if (!views[S.view]) S.view=sorted(views)[0][0];
+  let rooms=roomsOf();
+  if (!rooms.length){ mergeSeed(S.data); rooms=roomsOf(); }
+  if (!rooms.some(e=>e[0]===S.room)) S.room=rooms[0][0];
+  const views=viewsOf(S.data.rooms[S.room]);
+  if (!views.some(e=>e[0]===S.view)) S.view=views[0][0];
   if (S.sel && !items()[S.sel]) S.sel=null;
 }
-const sorted = o => Object.entries(o).sort((a,b)=>n(a[1].order)-n(b[1].order));
 
 /* ---------- 取資料 ---------- */
 const view = () => S.data.rooms[S.room].views[S.view];
@@ -487,10 +539,10 @@ function renderOver(){
 
 /* ---------- 房間 / 視角 ---------- */
 function renderNav(){
-  $('#rooms').replaceChildren(...sorted(S.data.rooms).map(([id,r])=>
+  $('#rooms').replaceChildren(...roomsOf().map(([id,r])=>
     h('button',{class:'chip',type:'button','aria-pressed':String(id===S.room),text:r.name||id,
       onclick:()=>{ S.room=id; S.view=null; S.sel=null; S.slotHi=null; fixSelection(); renderAll(); }})));
-  $('#views').replaceChildren(...sorted(S.data.rooms[S.room].views).map(([id,v])=>
+  $('#views').replaceChildren(...viewsOf(S.data.rooms[S.room]).map(([id,v])=>
     h('button',{class:'chip sub',type:'button','aria-pressed':String(id===S.view),text:v.name||id,
       onclick:()=>{ S.view=id; S.sel=null; S.slotHi=null; renderAll(); }})));
 }
@@ -771,12 +823,7 @@ function renderAll(){ renderNav(); renderStage(); renderEditor(); if (S.tab==='f
 
 /* ---------- 雲端更新 ---------- */
 let remoteTimer=null;
-function applyRemote(path, data, isPatch){
-  const segs=String(path||'/').split('/').filter(Boolean);
-  if (isPatch){ for (const [k,val] of Object.entries(data||{})) setAt(S.data, segs.concat(k.split('/').filter(Boolean)), val); }
-  else if (!segs.length){ S.data=(data && typeof data==='object')?data:{}; mergeSeed(S.data); }
-  else setAt(S.data, segs, data);
-  if (!S.data.rooms || !Object.keys(S.data.rooms).length) mergeSeed(S.data);
+function refreshFromRemote(){
   clearTimeout(remoteTimer);
   remoteTimer=setTimeout(()=>{
     if (drag && drag.on) return;
@@ -785,21 +832,37 @@ function applyRemote(path, data, isPatch){
     if (S.tab==='furn'){ renderResults(); renderSaved(); } else renderList();
   },60);
 }
+function applyRemote(path, doc){ applyDoc(S.data, path, doc); refreshFromRemote(); }
+async function reloadAll(){
+  if (loading || pending.size || inflight || (drag && drag.on)) return;
+  try {
+    const d=await store.load();
+    if (pending.size || inflight) return;
+    S.data=(d && typeof d==='object')?d:{}; mergeSeed(S.data);
+    syncErr=false; setSync(); refreshFromRemote();
+  } catch(e){}
+}
 
 /* ---------- 啟動 ---------- */
-(async function init(){
-  let data=null, failed=false;
-  try { data=await store.load(); } catch(e){ failed=true; }
+function showNote(t){ const el=$('#notice'); el.hidden=!t; el.textContent=t||''; }
+async function connect(){
+  let data;
+  try { data=await store.load(); }
+  catch(e){
+    loading=false; syncErr=true; setSync();
+    showNote('暫時連不上共用資料庫，目前顯示的是圖面原始尺寸，這時候的修改不會被儲存。會自動重試。');
+    setTimeout(connect,10000); return;
+  }
   S.data=(data && typeof data==='object')?data:{};
   const writes=mergeSeed(S.data);
-  fixSelection();
-  if (!failed) for (const p of writes) flush(p);
-  syncErr=failed; setSync();
-  const note=$('#notice');
-  if (!store.remote){ note.hidden=false; note.textContent='尚未連上共用資料庫：現在填寫的內容只會存在這台裝置的瀏覽器，其他人看不到。'; }
-  else if (failed){ note.hidden=false; note.textContent='暫時連不上共用資料庫，先顯示圖面原始尺寸。連上後會自動更新。'; }
-  renderAll();
-  store.listen(applyRemote, ok=>{ online=ok; if (ok && failed){ failed=false; syncErr=false; note.hidden=true; } setSync(); });
+  fixSelection(); loading=false; syncErr=false;
+  for (const p of writes) flush(p);
+  showNote(store.remote?'':'尚未連上共用資料庫：現在填寫的內容只會存在這台裝置的瀏覽器，其他人看不到。');
+  setSync(); renderAll();
+  store.listen(applyRemote, reloadAll, ok=>{ online=ok; setSync(); });
+}
+(function init(){
+  S.data={}; mergeSeed(S.data); fixSelection(); setSync(); renderAll(); connect();
 })();
 </script>
 </body>
