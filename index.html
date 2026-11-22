@@ -288,6 +288,25 @@ const SEED = { rooms: { study: { name:'書房', order:1, views: { door: {
     s5:{kind:'dim',tag:'',name:'',note:'',x:120,y:0,len:90,dir:'v',locked:true},
     r1:{kind:'dim',tag:'',name:'',note:'',x:48,y:6,len:35,dir:'h',locked:true},
     r2:{kind:'dim',tag:'',name:'',note:'',x:83,y:12,len:31,dir:'v',locked:true}
+  } },
+  window: {
+  name:'面對窗戶', order:3, width:270, height:270,
+  items: {
+    a:{kind:'box',cat:'cabinet',tag:'A',name:'',note:'高 8 為圖面標示（最下面一層）；寬 207 由 3 個 69 相加。',x:3,y:0,w:207,h:8,solid:true,locked:true,bx:-70},
+    b:{kind:'box',cat:'cabinet',tag:'B',name:'',note:'寬 69、高 35 為圖面標示。',x:3,y:8,w:69,h:35,solid:true,locked:true},
+    c:{kind:'box',cat:'cabinet',tag:'C',name:'',note:'寬 69、高 35 為圖面標示。',x:72,y:8,w:69,h:35,solid:true,locked:true},
+    d:{kind:'box',cat:'cabinet',tag:'D',name:'',note:'寬 69、高 35 為圖面標示。',x:141,y:8,w:69,h:35,solid:true,locked:true,side:''},
+    e:{kind:'box',cat:'cabinet',tag:'E',name:'',note:'高 8 為圖面標示（門片上方那一層）；寬 207 由 3 個 69 相加。',x:3,y:43,w:207,h:8,solid:true,locked:true,bx:45},
+    f:{kind:'box',cat:'board',tag:'F',name:'',note:'高 10 為圖面標示，頂面離地 61；寬 207 由 3 個 69 相加。',x:3,y:51,w:207,h:10,solid:true,locked:true,bx:-45},
+    g:{kind:'line',tag:'G',name:'',note:'離天花板 42 的水平線；這條線的長度圖上沒標。',x:0,y:228,len:240,dir:'h',locked:true},
+    h:{kind:'box',cat:'cabinet',tag:'H',name:'',note:'寬 40 為圖面標示；高度圖上沒標，依比例推定和 F 頂面同高（61）。',x:210,y:0,w:40,h:61,solid:true,locked:true,side:''},
+    j:{kind:'box',cat:'trim',tag:'J',name:'',note:'厚 3 為圖面標示；高度推定到上方櫃體底部。',x:267,y:0,w:3,h:169,solid:true,locked:true,side:''},
+    k:{kind:'box',cat:'board',tag:'K',name:'',note:'此圖只標了水平位置；高度與深度取自「面對門」那張圖（同一個物件的側面）。深 59、厚 4、下方淨高 71。',x:208,y:71,w:59,h:4,solid:true,locked:true,nochain:true},
+    l:{kind:'box',cat:'cabinet',tag:'L',name:'',note:'此圖只標了水平位置；高度與深度取自「面對門」那張圖（同一個物件的側面）。深 30、高 55。',x:240,y:169,w:30,h:55,solid:true,locked:true,side:''},
+    m:{kind:'box',cat:'structure',tag:'M',name:'',note:'此圖只標了水平位置；高度與深度取自「面對門」那張圖（同一個物件的側面）。深 30（推定）、高 46。',x:240,y:224,w:30,h:46,solid:true,locked:true,side:''},
+    t1:{kind:'dim',tag:'',name:'',note:'',x:-34,y:0,len:51,dir:'v',locked:true},
+    w1:{kind:'dim',tag:'',name:'',note:'',x:0,y:-29,len:210,dir:'h',locked:true},
+    w2:{kind:'dim',tag:'',name:'',note:'',x:210,y:-29,len:57,dir:'h',locked:true}
   } }
   } } } };
 
@@ -568,8 +587,9 @@ function renderDims(){
     if (it.cat!=='furniture'){ if (side.includes('L')) L.push(g.y,g.y+g.h); if (side.includes('R')) R.push(g.y,g.y+g.h); }
     if (g.y+g.h/2<=H/2 || it.cat==='furniture') B.push(g.x,g.x+g.w);
   }
-  for (const [a,b] of chain(L)) drawDim(gDims,-18,H-a,-18,H-b,fmt(b-a));
-  for (const [a,b] of chain(R)) drawDim(gDims,W+20,H-a,W+20,H-b,fmt(b-a));
+  const cl=chain(L), cr=chain(R);
+  if (cl.length>1) for (const [a,b] of cl) drawDim(gDims,-18,H-a,-18,H-b,fmt(b-a));
+  if (cr.length>1) for (const [a,b] of cr) drawDim(gDims,W+20,H-a,W+20,H-b,fmt(b-a));
   for (const [a,b] of chain(B)) drawDim(gDims,a,H+14,b,H+14,fmt(b-a));
   drawDim(gDims,LAY.totalX,H,LAY.totalX,0,fmt(H),'total');
   drawDim(gDims,0,LAY.totalY,W,LAY.totalY,fmt(W),'total');
