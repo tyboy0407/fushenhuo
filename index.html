@@ -137,6 +137,9 @@ button{cursor:pointer}
 .it .ref{stroke:var(--muted);stroke-width:.7;stroke-dasharray:4 2.5}
 .it.sel .ref{stroke:var(--accent);stroke-width:1.2}
 .it .hit{stroke:transparent;stroke-width:11;fill:none}
+.it .mk{fill:var(--paper);stroke:var(--bad);stroke-width:1}
+.it.sel .mk{stroke:var(--accent);stroke-width:1.8}
+.it .mkt{fill:var(--ink);font:600 6.6px var(--mono);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .it.sel.free{cursor:move;touch-action:none}
 .it{cursor:pointer}
 .dl{stroke:var(--muted);stroke-width:.5;fill:none}
@@ -202,6 +205,7 @@ button{cursor:pointer}
           <button class="btn" type="button" id="addBox">＋ 物件</button>
           <button class="btn" type="button" id="addDim">＋ 量測線</button>
           <button class="btn" type="button" id="addLine">＋ 參考線</button>
+          <button class="btn" type="button" id="addMark">＋ 標記</button>
         </div>
         <div class="list" id="list"></div>
       </div>
@@ -248,10 +252,48 @@ const SEED = { rooms: { study: { name:'書房', order:1, views: { door: {
     m2:{kind:'dim',tag:'',name:'',note:'',x:-34,y:75,len:94,dir:'v',locked:true},
     m3:{kind:'dim',tag:'',name:'',note:'',x:-34,y:0,len:75,dir:'v',locked:true},
     m4:{kind:'dim',tag:'',name:'',note:'',x:0,y:130,len:30,dir:'h',locked:true}
-  } } } } } };
+  } },
+  desk: {
+  name:'書桌牆', order:2, width:290, height:270, wallL:[[0,61],[224,285]],
+  items: {
+    a:{kind:'box',cat:'trim',tag:'A',name:'',note:'圖面標示 15，位在淨高 270 的上方。',x:0,y:270,w:290,h:15,solid:false,locked:true,side:'LR'},
+    b:{kind:'box',cat:'other',tag:'B',name:'',note:'離天花板 46 的範圍，圖面畫成整面牆寬。',x:0,y:224,w:290,h:46,solid:true,locked:true,side:'LR'},
+    c:{kind:'line',tag:'C',name:'',note:'圖面左上標示 20、26 的分界；這條線的長度圖上沒標。',x:0,y:250,len:17,dir:'h',locked:true},
+    d:{kind:'box',cat:'trim',tag:'D',name:'',note:'高 149 為圖面標示；寬 70 圖上沒直接標，由底部的 80 減去上方的 10 推定。',x:5,y:75,w:70,h:149,solid:false,locked:true},
+    e:{kind:'box',cat:'cabinet',tag:'E',name:'',note:'高 51、上下各留 2 為圖面標示；寬 215 由圖面的 10 + 205 推定。圖上分成四格，各格寬度沒標。',x:75,y:171,w:215,h:51,solid:true,locked:true},
+    f:{kind:'box',cat:'board',tag:'F',name:'',note:'高 20（離地 149 到 169）為圖面標示；寬 215 由圖面的 10 + 205 推定。',x:75,y:149,w:215,h:20,solid:true,locked:true},
+    g:{kind:'box',cat:'trim',tag:'G',name:'',note:'寬 205、高 74 為圖面標示。',x:85,y:75,w:205,h:74,solid:false,locked:true},
+    h:{kind:'box',cat:'board',tag:'H',name:'',note:'寬 205、厚 4、下方淨高 71 為圖面標示。',x:85,y:71,w:205,h:4,solid:true,locked:true},
+    j:{kind:'box',cat:'board',tag:'J',name:'',note:'厚 4、下方留 10 為圖面標示；寬 80 依底部標示推定。',x:5,y:71,w:80,h:4,solid:true,locked:true},
+    k:{kind:'box',cat:'cabinet',tag:'K',name:'',note:'寬 80、高 61 為圖面標示，左側離牆 5。',x:5,y:0,w:80,h:61,solid:true,locked:true,bx:-22},
+    l:{kind:'box',cat:'other',tag:'L',name:'',note:'寬 35、高 31 為圖面標示；在 K 裡面的位置圖上沒標，依比例推定。',x:48,y:12,w:35,h:31,solid:false,locked:true,nochain:true},
+    m:{kind:'mark',tag:'M',name:'',note:'圖面紅色記號。離地 90、離 G 左緣 23 為圖面藍色標示。',x:108,y:90,locked:true},
+    n:{kind:'mark',tag:'N',name:'',note:'圖面紅色記號。離地 90、在 P 左邊 13 為圖面藍色標示。',x:228,y:90,locked:true},
+    p:{kind:'mark',tag:'P',name:'',note:'圖面紅色記號。離地 90、離右牆 49 為圖面藍色標示。',x:241,y:90,locked:true},
+    q:{kind:'mark',tag:'Q',name:'',note:'圖面紅色記號。離右牆 19 為圖面藍色標示；高度圖上沒標，依比例推定約 30。',x:271,y:30,locked:true},
+    t1:{kind:'dim',tag:'',name:'',note:'',x:-34,y:224,len:46,dir:'v',locked:true},
+    t2:{kind:'dim',tag:'',name:'',note:'',x:-34,y:75,len:149,dir:'v',locked:true},
+    t3:{kind:'dim',tag:'',name:'',note:'',x:-34,y:0,len:75,dir:'v',locked:true},
+    u1:{kind:'dim',tag:'',name:'',note:'',x:328,y:224,len:61,dir:'v',locked:true},
+    u2:{kind:'dim',tag:'',name:'',note:'',x:328,y:169,len:55,dir:'v',locked:true},
+    u3:{kind:'dim',tag:'',name:'',note:'',x:328,y:149,len:20,dir:'v',locked:true},
+    u4:{kind:'dim',tag:'',name:'',note:'',x:328,y:0,len:149,dir:'v',locked:true},
+    w1:{kind:'dim',tag:'',name:'',note:'',x:0,y:-29,len:85,dir:'h',locked:true},
+    w2:{kind:'dim',tag:'',name:'',note:'',x:75,y:137,len:10,dir:'h',locked:true},
+    w3:{kind:'dim',tag:'',name:'',note:'',x:85,y:137,len:205,dir:'h',locked:true},
+    s1:{kind:'dim',tag:'',name:'',note:'',x:85,y:99,len:23,dir:'h',locked:true},
+    s2:{kind:'dim',tag:'',name:'',note:'',x:228,y:99,len:13,dir:'h',locked:true},
+    s3:{kind:'dim',tag:'',name:'',note:'',x:241,y:99,len:49,dir:'h',locked:true},
+    s4:{kind:'dim',tag:'',name:'',note:'',x:271,y:39,len:19,dir:'h',locked:true},
+    s5:{kind:'dim',tag:'',name:'',note:'',x:120,y:0,len:90,dir:'v',locked:true},
+    r1:{kind:'dim',tag:'',name:'',note:'',x:48,y:6,len:35,dir:'h',locked:true},
+    r2:{kind:'dim',tag:'',name:'',note:'',x:83,y:12,len:31,dir:'v',locked:true}
+  } }
+  } } } };
 
 const CATS = { structure:'結構（樑、柱、牆）', trim:'木作／封板', cabinet:'櫃體', board:'層板／檯面', door:'門', furniture:'家具', other:'其他' };
-const KIND_NAME = { box:'物件', line:'參考線', dim:'量測線' };
+const KIND_NAME = { box:'物件', line:'參考線', dim:'量測線', mark:'標記' };
+const KIND_ORDER = { box:0, line:1, mark:2, dim:3 };
 const SUPPORT_CATS = ['board','cabinet','furniture','other'];
 const NS = 'http://www.w3.org/2000/svg';
 const $ = s => document.querySelector(s);
@@ -417,6 +459,7 @@ const items = () => { const v=view(); if (!v.items) v.items={}; return v.items; 
 const itemPath = id => 'rooms/'+S.room+'/views/'+S.view+'/items/'+id;
 function geo(it){
   if (it.kind==='box') return {x:n(it.x),y:n(it.y),w:Math.max(0,n(it.w)),h:Math.max(0,n(it.h))};
+  if (it.kind==='mark') return {x:n(it.x),y:n(it.y),w:0,h:0};
   const len=Math.max(0,n(it.len));
   return {x:n(it.x),y:n(it.y),w:it.dir==='h'?len:0,h:it.dir==='v'?len:0};
 }
@@ -469,9 +512,14 @@ function drawItem(id, it){
       grp.append(s('rect',{class:'deco',x:hand,y:H-g.y-112,width:2,height:14,rx:1}));
     }
     const named = it.name && g.w>=it.name.length*7.6+6 && g.h>=26;
-    grp.append(s('circle',{class:'bdg',cx,cy:named?cy-6:cy,r:6}));
-    grp.append(s('text',{class:'bdt',x:cx,y:named?cy-6:cy,text:it.tag}));
-    if (named) grp.append(s('text',{class:'nmt',x:cx,y:cy+9,text:it.name}));
+    // bx、by：代號圓點離物件中心的偏移，避免被疊在上面的小物件蓋住
+    const bx=cx+n(it.bx), by=cy-n(it.by);
+    grp.append(s('circle',{class:'bdg',cx:bx,cy:named?by-6:by,r:6}));
+    grp.append(s('text',{class:'bdt',x:bx,y:named?by-6:by,text:it.tag}));
+    if (named) grp.append(s('text',{class:'nmt',x:bx,y:by+9,text:it.name}));
+  } else if (it.kind==='mark'){
+    grp.append(s('rect',{class:'mk',x:cx-4.8,y:cy-4.8,width:9.6,height:9.6,rx:1.6}));
+    grp.append(s('text',{class:'mkt',x:cx,y:cy,text:it.tag}));
   } else {
     const x1=g.x, y1=H-g.y, x2=g.x+g.w, y2=H-(g.y+g.h);
     if (it.kind==='line'){
@@ -488,39 +536,43 @@ function drawItem(id, it){
 function renderStage(){
   const v=view(), W=v.width, H=v.height, list=Object.entries(items());
   const ext=Math.max(0,...list.map(([,i])=>{ if (i.kind!=='box') return 0; const g=geo(i); return g.y+g.h-H; }));
-  const ML=63, MR=28, MT=ext+18, MB=38;
+  let minX=0, maxX=W, minY=0;
+  for (const [,i] of list){ if (i.kind!=='dim') continue; const g=geo(i); minX=Math.min(minX,g.x); maxX=Math.max(maxX,g.x+g.w); minY=Math.min(minY,g.y); }
+  LAY.totalX=Math.min(-50,minX-16); LAY.totalY=H+Math.max(30,15-minY);
+  const ML=13-LAY.totalX, MR=Math.max(28,maxX-W+10), MT=ext+18, MB=LAY.totalY-H+8;
   svgEl.setAttribute('viewBox',[-ML,-MT,W+ML+MR,H+MT+MB].join(' '));
+  const wall=(x,segs)=>(Array.isArray(segs) && segs.length ? segs : [[0,H+ext]]).map(q=>
+    s('rect',{class:'wall',x,y:H-Math.max(n(q[0]),n(q[1])),width:7,height:Math.abs(n(q[1])-n(q[0]))}));
   svgEl.style.width=(S.zoom*100)+'%'; svgEl.classList.toggle('fit',S.zoom===1);
   gBase.replaceChildren(
-    s('rect',{class:'wall',x:-7,y:-ext-7,width:7,height:H+ext+7}),
-    s('rect',{class:'wall',x:W,y:-ext-7,width:7,height:H+ext+7}),
+    ...wall(-7,v.wallL), ...wall(W,v.wallR),
     s('rect',{class:'wall',x:-7,y:-ext-7,width:W+14,height:7}),
     s('rect',{class:'room',x:0,y:0,width:W,height:H}),
     s('line',{class:'floor',x1:-7,y1:H,x2:W+7,y2:H}));
-  const order={box:0,line:1,dim:2};
-  list.sort((a,b)=>{ const ka=order[a[1].kind]||0, kb=order[b[1].kind]||0; if (ka!==kb) return ka-kb;
+  list.sort((a,b)=>{ const ka=KIND_ORDER[a[1].kind]||0, kb=KIND_ORDER[b[1].kind]||0; if (ka!==kb) return ka-kb;
     const ga=geo(a[1]), gb=geo(b[1]); return gb.w*gb.h-ga.w*ga.h; });
   gItems.replaceChildren(...list.map(([id,it])=>drawItem(id,it)));
   renderDims(); renderOver();
   $('#meta').textContent='牆寬 '+fmt(W)+' × 淨高 '+fmt(H);
   $('#zoomVal').textContent=Math.round(S.zoom*100)+'%';
 }
+const LAY={totalX:-50,totalY:300};
 function chain(edges){ const a=[...new Set(edges.map(r1))].sort((p,q)=>p-q); return a.slice(1).map((b,i)=>[a[i],b]); }
 function renderDims(){
   gDims.replaceChildren(); if (!S.showDims) return;
   const v=view(), W=v.width, H=v.height, L=[0,H], R=[0,H], B=[0,W];
   for (const it of Object.values(items())){
-    if (it.kind==='dim') continue;
-    const g=geo(it);
+    if (it.kind==='dim' || it.kind==='mark' || it.nochain) continue;
+    const g=geo(it), side=typeof it.side==='string' ? it.side : (g.x+g.w/2<=W/2 ? 'L' : 'R');
     // 擺上去的家具只影響底部的寬度標註，左右兩側保留圖面原本的高度標註
-    if (it.cat!=='furniture') (g.x+g.w/2<=W/2 ? L : R).push(g.y,g.y+g.h);
+    if (it.cat!=='furniture'){ if (side.includes('L')) L.push(g.y,g.y+g.h); if (side.includes('R')) R.push(g.y,g.y+g.h); }
     if (g.y+g.h/2<=H/2 || it.cat==='furniture') B.push(g.x,g.x+g.w);
   }
   for (const [a,b] of chain(L)) drawDim(gDims,-18,H-a,-18,H-b,fmt(b-a));
   for (const [a,b] of chain(R)) drawDim(gDims,W+20,H-a,W+20,H-b,fmt(b-a));
   for (const [a,b] of chain(B)) drawDim(gDims,a,H+14,b,H+14,fmt(b-a));
-  drawDim(gDims,-50,H,-50,0,fmt(H),'total');
-  drawDim(gDims,0,H+30,W,H+30,fmt(W),'total');
+  drawDim(gDims,LAY.totalX,H,LAY.totalX,0,fmt(H),'total');
+  drawDim(gDims,0,LAY.totalY,W,LAY.totalY,fmt(W),'total');
 }
 function renderOver(){
   gOver.replaceChildren();
@@ -555,6 +607,7 @@ function renderReadout(){
   const v=view(), g=geo(it);
   box.textContent = it.kind==='box'
     ? '離右牆 '+fmt(v.width-g.x-g.w)+'・離天花板 '+fmt(v.height-g.y-g.h)+'・頂端離地 '+fmt(g.y+g.h)
+    : it.kind==='mark' ? '離右牆 '+fmt(v.width-g.x)+'・離天花板 '+fmt(v.height-g.y)
     : (it.dir==='h' ? '水平線，離地 '+fmt(g.y)+'，從離左牆 '+fmt(g.x)+' 到 '+fmt(g.x+g.w)
                     : '垂直線，離左牆 '+fmt(g.x)+'，從離地 '+fmt(g.y)+' 到 '+fmt(g.y+g.h));
   const p=problems(S.sel,it); wb.hidden=!p.length; wb.textContent=p.join('；');
@@ -567,7 +620,7 @@ function renderEditor(){
   const numIn=(key,min)=>h('input',{id:'ed-'+key,type:'number',inputmode:'decimal',step:'0.5',value:fmt(n(it[key])),disabled:!!it.locked,
     oninput:e=>{ const x=parseFloat(e.target.value); if (!Number.isFinite(x) || (min!=null && x<min)) return; it[key]=r1(x); touched(id); },
     onchange:()=>renderList()});
-  const name=h('input',{id:'ed-name',type:'text',maxlength:'40',value:it.name||'',placeholder:isBox?'這是什麼？例如：吊櫃':'名稱（選填）',
+  const name=h('input',{id:'ed-name',type:'text',maxlength:'40',value:it.name||'',placeholder:isBox?'這是什麼？例如：吊櫃':it.kind==='mark'?'這是什麼？例如：插座':'名稱（選填）',
     oninput:e=>{ it.name=e.target.value.trim(); save(itemPath(id)); renderStage(); }, onchange:()=>renderList()});
   const note=h('textarea',{id:'ed-note',maxlength:'300',rows:'2',text:it.note||'',
     oninput:e=>{ it.note=e.target.value; save(itemPath(id)); }});
@@ -582,6 +635,9 @@ function renderEditor(){
     sel.value=CATS[it.cat]?it.cat:'other';
     kids.push(h('div',{class:'grid2'}, field('類別（決定畫法）', sel), field('備註', note)));
     kids.push(h('div',{class:'grid4'}, field('離左牆',numIn('x')), field('離地',numIn('y')), field('寬',numIn('w',0)), field('高',numIn('h',0))));
+  } else if (it.kind==='mark'){
+    kids.push(h('div',{style:'margin-top:8px'}, field('備註', note)));
+    kids.push(h('div',{class:'grid2'}, field('離左牆',numIn('x')), field('離地',numIn('y'))));
   } else {
     const dir=h('select',{id:'ed-dir',disabled:!!it.locked,onchange:e=>{ it.dir=e.target.value; touched(id); renderList(); }},
       h('option',{value:'h',text:'水平'}), h('option',{value:'v',text:'垂直'}));
@@ -604,10 +660,10 @@ function renderEditor(){
   box.replaceChildren(...kids); renderReadout();
 }
 function renderList(){
-  const rows=Object.entries(items()).sort((a,b)=>{ const o={box:0,line:1,dim:2};
+  const rows=Object.entries(items()).sort((a,b)=>{ const o=KIND_ORDER;
     return (o[a[1].kind]-o[b[1].kind]) || String(a[1].tag).localeCompare(String(b[1].tag)); });
   $('#list').replaceChildren(...rows.map(([id,it])=>{ const g=geo(it);
-    const meta = it.kind==='box' ? '寬 '+fmt(g.w)+' × 高 '+fmt(g.h) : (it.kind==='dim'?'量測 ':'長 ')+fmt(n(it.len));
+    const meta = it.kind==='box' ? '寬 '+fmt(g.w)+' × 高 '+fmt(g.h) : it.kind==='mark' ? '離地 '+fmt(g.y) : (it.kind==='dim'?'量測 ':'長 ')+fmt(n(it.len));
     return h('button',{class:'li',type:'button','aria-current':String(id===S.sel),onclick:()=>select(id)},
       h('span',{class:'tag'+(it.kind==='dim'?' dim':it.cat==='furniture'?' furn':''),text:it.tag||'量'}),
       h('span',{class:'nm'+(it.name?'':' blank'),text:it.name||(it.kind==='box'?'尚未命名':KIND_NAME[it.kind])}),
@@ -619,6 +675,7 @@ function addItem(kind){
   const v=view(), id=uid('i'); let it;
   if (kind==='box') it={kind:'box',cat:'other',tag:nextTag(),name:'',note:'',x:r1(v.width/2-20),y:0,w:40,h:40,solid:true,locked:false};
   else if (kind==='dim') it={kind:'dim',tag:'',name:'',note:'',x:r1(v.width/2),y:0,len:100,dir:'v',locked:false};
+  else if (kind==='mark') it={kind:'mark',tag:nextTag(),name:'',note:'',x:r1(v.width/2),y:100,locked:false};
   else it={kind:'line',tag:nextTag(),name:'',note:'',x:0,y:100,len:v.width,dir:'h',locked:false};
   items()[id]=it; save(itemPath(id)); select(id);
   $('#editor').scrollIntoView({block:'nearest',behavior:'smooth'});
@@ -688,7 +745,7 @@ function computeSlots(v, exclude){
         if (o.y1<=sp.y){ blocked=true; break; }
         if (o.y1<top){ top=o.y1; cap=o.it; }
       }
-      if (blocked || top-sp.y<5 || b-a<5) continue;
+      if (blocked || top-sp.y<8 || b-a<8) continue;
       cand.push({x1:a,x2:b,y1:sp.y,y2:top,sup:sp.it,cap});
     }
     for (const c of cand)
@@ -813,6 +870,7 @@ $('#tabFurn').addEventListener('click', ()=>setTab('furn'));
 $('#addBox').addEventListener('click', ()=>addItem('box'));
 $('#addDim').addEventListener('click', ()=>addItem('dim'));
 $('#addLine').addEventListener('click', ()=>addItem('line'));
+$('#addMark').addEventListener('click', ()=>addItem('mark'));
 $('#btnDims').addEventListener('click', e=>{ S.showDims=!S.showDims; e.currentTarget.setAttribute('aria-pressed',String(S.showDims)); renderDims(); });
 const ZOOMS=[1,1.5,2,3];
 function zoomBy(d){ const i=Math.min(ZOOMS.length-1,Math.max(0,ZOOMS.indexOf(S.zoom)+d)); S.zoom=ZOOMS[i]; renderStage(); }
