@@ -50,3 +50,32 @@ begin
     alter publication supabase_realtime add table public.fushenhuo_docs;
   end if;
 end $$;
+
+-- ---------------------------------------------------------------------------
+-- 擺設照片：收藏庫裡每件擺設可以附一張照片，存在 fushenhuo-photos 這個儲存桶
+-- 任何拿到網站的人都能上傳、看、刪這個桶裡的照片；單檔上限 5 MB，只收圖片
+-- ---------------------------------------------------------------------------
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('fushenhuo-photos', 'fushenhuo-photos', true, 5242880, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update
+  set public = excluded.public,
+      file_size_limit = excluded.file_size_limit,
+      allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "fushenhuo photos read" on storage.objects;
+create policy "fushenhuo photos read"
+  on storage.objects for select
+  to anon, authenticated
+  using (bucket_id = 'fushenhuo-photos');
+
+drop policy if exists "fushenhuo photos upload" on storage.objects;
+create policy "fushenhuo photos upload"
+  on storage.objects for insert
+  to anon, authenticated
+  with check (bucket_id = 'fushenhuo-photos');
+
+drop policy if exists "fushenhuo photos delete" on storage.objects;
+create policy "fushenhuo photos delete"
+  on storage.objects for delete
+  to anon, authenticated
+  using (bucket_id = 'fushenhuo-photos');
