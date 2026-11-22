@@ -158,6 +158,7 @@ button{cursor:pointer}
 .it .ref{stroke:var(--muted);stroke-width:.7;stroke-dasharray:4 2.5}
 .it.sel .ref{stroke:var(--accent);stroke-width:1.2}
 .it .hit{stroke:transparent;stroke-width:11;fill:none}
+.nml{fill:var(--ink);font:500 7.5px var(--sans);dominant-baseline:central;paint-order:stroke;stroke:var(--paper);stroke-width:2.6px;stroke-linejoin:round;pointer-events:none}
 .it .mk{fill:var(--paper);stroke:var(--bad);stroke-width:1}
 .it.sel .mk{stroke:var(--accent);stroke-width:1.8}
 .it .mkt{fill:var(--ink);font:600 6.6px var(--mono);text-anchor:middle;dominant-baseline:central;pointer-events:none}
@@ -210,7 +211,7 @@ button{cursor:pointer}
               <rect class="hatch-bg" width="4" height="4"/><line class="hatch-ln" x1="0" y1="0" x2="0" y2="4"/>
             </pattern>
           </defs>
-          <g id="gBase"></g><g id="gItems"></g><g id="gDims"></g><g id="gOver"></g>
+          <g id="gBase"></g><g id="gItems"></g><g id="gNames"></g><g id="gDims"></g><g id="gOver"></g>
         </svg>
       </div>
       <p class="hint">單位：公分。點一下物件可選取並填寫名稱；解鎖後可直接拖曳，或用方向鍵微調。</p>
@@ -300,10 +301,6 @@ const SEED = { rooms: { study: { name:'書房', order:1, views: { door: {
     j:{kind:'box',cat:'board',tag:'J',name:'',note:'厚 4、下方留 10 為圖面標示；寬 80 依底部標示推定。',x:5,y:71,w:80,h:4,solid:true,locked:true},
     k:{kind:'box',cat:'cabinet',tag:'K',name:'',note:'寬 80、高 61 為圖面標示，左側離牆 5。',x:5,y:0,w:80,h:61,solid:true,locked:true,bx:-22},
     l:{kind:'box',cat:'other',tag:'L',name:'',note:'寬 35、高 31 為圖面標示；在 K 裡面的位置圖上沒標，依比例推定。',x:48,y:12,w:35,h:31,solid:false,locked:true,nochain:true},
-    m:{kind:'mark',tag:'M',name:'',note:'圖面紅色記號。離地 90、離 G 左緣 23 為圖面藍色標示。',x:108,y:90,locked:true},
-    n:{kind:'mark',tag:'N',name:'',note:'圖面紅色記號。離地 90、在 P 左邊 13 為圖面藍色標示。',x:228,y:90,locked:true},
-    p:{kind:'mark',tag:'P',name:'',note:'圖面紅色記號。離地 90、離右牆 49 為圖面藍色標示。',x:241,y:90,locked:true},
-    q:{kind:'mark',tag:'Q',name:'',note:'圖面紅色記號。離右牆 19 為圖面藍色標示；高度圖上沒標，依比例推定約 30。',x:271,y:30,locked:true},
     t1:{kind:'dim',tag:'',name:'',note:'',x:-34,y:224,len:46,dir:'v',locked:true},
     t2:{kind:'dim',tag:'',name:'',note:'',x:-34,y:75,len:149,dir:'v',locked:true},
     t3:{kind:'dim',tag:'',name:'',note:'',x:-34,y:0,len:75,dir:'v',locked:true},
@@ -349,7 +346,7 @@ const KIND_ORDER = { box:0, line:1, mark:2, dim:3 };
 const SUPPORT_CATS = ['board','cabinet','furniture','other'];
 const NS = 'http://www.w3.org/2000/svg';
 const $ = s => document.querySelector(s);
-const svgEl = $('#svg'), gBase = $('#gBase'), gItems = $('#gItems'), gDims = $('#gDims'), gOver = $('#gOver');
+const svgEl = $('#svg'), gBase = $('#gBase'), gItems = $('#gItems'), gNames = $('#gNames'), gDims = $('#gDims'), gOver = $('#gOver');
 
 const S = { data:null, room:null, view:null, sel:null, tab:'items', zoom:1, showDims:true, slotHi:null,
             draft:{id:null,name:'',w:'',d:'',h:'',color:'',price:'',shop:'',url:'',note:'',photo:'',file:null} };
@@ -560,8 +557,18 @@ function drawDim(g,x1,y1,x2,y2,label,cls){
                   : s('text',{x:mx,y:my-2.8,class:'dn',text:label}));
   g.append(grp); return grp;
 }
+// 估計文字寬度（圖上的單位是公分）：中文字約 7.6，英數約 4.3
+const textW = t => [...t].reduce((a,ch)=>a+(ch.charCodeAt(0)>255?7.6:4.3),0);
+// 物件的名稱：放得進物件裡就放在代號下方，放不進就接在代號旁邊；靠右牆時改放左邊
+function nameLabel(id, name, x, y, below, W){
+  let t=String(name).trim(); if (!t) return null;
+  if ([...t].length>16) t=[...t].slice(0,15).join('')+'…';
+  if (below) return s('text',{class:'nml','data-lab':id,x,y,style:'text-anchor:middle',text:t});
+  const right=x+9+textW(t)<=W+6;
+  return s('text',{class:'nml','data-lab':id,x:right?x+9:x-9,y,style:'text-anchor:'+(right?'start':'end'),text:t});
+}
 function drawItem(id, it){
-  const v=view(), H=v.height, g=geo(it), sel=S.sel===id;
+  const v=view(), H=v.height, W=v.width, g=geo(it), sel=S.sel===id;
   const cls=['it','kind-'+it.kind]; if (it.kind==='box') cls.push('cat-'+(CATS[it.cat]?it.cat:'other'));
   if (sel) cls.push('sel'); if (sel && !it.locked) cls.push('free'); if (problems(id,it).length) cls.push('bad');
   const col=it.kind==='box' && it.cat==='furniture' ? okColor(it.color) : '';
@@ -576,15 +583,16 @@ function drawItem(id, it){
       grp.append(s('path',{class:'deco dash',d:'M'+fx+' '+top+' L'+hx+' '+(top+g.h/2)+' L'+fx+' '+(top+g.h)}));
       grp.append(s('rect',{class:'deco',x:hand,y:H-g.y-112,width:2,height:14,rx:1}));
     }
-    const named = it.name && g.w>=it.name.length*7.6+6 && g.h>=26;
+    const nm=String(it.name||'').trim(), inside=!!nm && g.w>=textW(nm)+6 && g.h>=26;
     // bx、by：代號圓點離物件中心的偏移，避免被疊在上面的小物件蓋住
     const bx=cx+n(it.bx), by=cy-n(it.by);
-    grp.append(s('circle',{class:'bdg',cx:bx,cy:named?by-6:by,r:6}));
-    grp.append(s('text',{class:'bdt',x:bx,y:named?by-6:by,text:it.tag}));
-    if (named) grp.append(s('text',{class:'nmt',x:bx,y:by+9,text:it.name}));
+    grp.append(s('circle',{class:'bdg',cx:bx,cy:inside?by-6:by,r:6}));
+    grp.append(s('text',{class:'bdt',x:bx,y:inside?by-6:by,text:it.tag}));
+    grp._lab=inside ? nameLabel(id,nm,bx,by+7,true,W) : nameLabel(id,nm,bx,by,false,W);
   } else if (it.kind==='mark'){
     grp.append(s('rect',{class:'mk',x:cx-4.8,y:cy-4.8,width:9.6,height:9.6,rx:1.6}));
     grp.append(s('text',{class:'mkt',x:cx,y:cy,text:it.tag}));
+    grp._lab=nameLabel(id,it.name||'',cx,cy,false,W);
   } else {
     const x1=g.x, y1=H-g.y, x2=g.x+g.w, y2=H-(g.y+g.h);
     if (it.kind==='line'){
@@ -593,6 +601,7 @@ function drawItem(id, it){
       const short=n(it.len)<60, bx=short?(it.dir==='h'?x2+8:cx):cx, by=short?(it.dir==='v'?y2-8:cy):cy;
       grp.append(s('circle',{class:'bdg',cx:bx,cy:by,r:6}));
       grp.append(s('text',{class:'bdt',x:bx,y:by,text:it.tag}));
+      grp._lab=nameLabel(id,it.name||'',bx,by,false,W);
     } else drawDim(grp,x1,y1,x2,y2,fmt(n(it.len)),'user');
     grp.append(s('line',{class:'hit',x1,y1,x2,y2}));
   }
@@ -616,7 +625,9 @@ function renderStage(){
     s('line',{class:'floor',x1:-7,y1:H,x2:W+7,y2:H}));
   list.sort((a,b)=>{ const ka=KIND_ORDER[a[1].kind]||0, kb=KIND_ORDER[b[1].kind]||0; if (ka!==kb) return ka-kb;
     const ga=geo(a[1]), gb=geo(b[1]); return gb.w*gb.h-ga.w*ga.h; });
-  gItems.replaceChildren(...list.map(([id,it])=>drawItem(id,it)));
+  const groups=list.map(([id,it])=>drawItem(id,it));
+  gItems.replaceChildren(...groups);
+  gNames.replaceChildren(...groups.map(q=>q._lab).filter(Boolean));
   renderDims(); renderOver();
   $('#meta').textContent='牆寬 '+fmt(W)+' × 淨高 '+fmt(H);
   $('#zoomVal').textContent=Math.round(S.zoom*100)+'%';
@@ -779,7 +790,7 @@ svgEl.addEventListener('pointerdown', e=>{
   drag={id,sx:e.clientX,sy:e.clientY,moved:false,on:false};
   if (it && id===S.sel && !it.locked){
     const m=svgEl.getScreenCTM();
-    Object.assign(drag,{on:true,g,ox:n(it.x),oy:n(it.y),k:m?1/m.a:1});
+    Object.assign(drag,{on:true,g,lab:[...gNames.children].find(q=>q.dataset.lab===id)||null,ox:n(it.x),oy:n(it.y),k:m?1/m.a:1});
     try { svgEl.setPointerCapture(e.pointerId); } catch(err){}
   }
 });
@@ -791,7 +802,8 @@ svgEl.addEventListener('pointermove', e=>{
   const it=items()[drag.id]; if (!it) return;
   const [nx,ny]=snap(drag.id,it,Math.round(drag.ox+dx*drag.k),Math.round(drag.oy-dy*drag.k));
   it.x=nx; it.y=ny;
-  drag.g.setAttribute('transform','translate('+(nx-drag.ox)+' '+(drag.oy-ny)+')');
+  const tf='translate('+(nx-drag.ox)+' '+(drag.oy-ny)+')';
+  drag.g.setAttribute('transform',tf); if (drag.lab) drag.lab.setAttribute('transform',tf);
   drag.g.classList.toggle('bad',problems(drag.id,it).length>0);
   renderDims(); renderOver(); renderReadout();
 });
