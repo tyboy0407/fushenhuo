@@ -29,6 +29,7 @@
   }
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans);-webkit-text-size-adjust:100%}
 .wrap{max-width:1320px;margin:0 auto;padding:14px 16px 40px}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -114,7 +115,11 @@ button{cursor:pointer}
 .dot{flex:none;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 1px var(--line);align-self:center}
 .swatches{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 .sw{width:30px;height:30px;border-radius:50%;padding:0;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);background:var(--c)}
-.sw.none{background:var(--furn-soft)}
+.sw.none{background:linear-gradient(135deg,var(--surface) 45%,var(--bad) 45% 55%,var(--surface) 55%)}
+.swm{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 11px 3px 4px;font-size:13px;min-height:30px}
+.swm .dot{width:20px;height:20px}
+.swm[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1.5px var(--accent)}
+.swbreak{flex-basis:100%;height:0}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--accent)}
 .fld .swc{width:40px;height:32px;min-height:32px;padding:0;border:1px solid var(--line);border-radius:8px;background:none}
 .fld input[type=file]{padding:6px;font-size:13.5px}
@@ -125,6 +130,51 @@ button{cursor:pointer}
 .more .grid2{margin-top:8px}
 #f-photoPrev{display:flex;align-items:center;gap:10px;margin-top:6px}
 .small-note.err{color:var(--bad)}
+.saved-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;margin:16px 0 2px}
+.saved-head h2{font-size:15px;margin:0}
+.libbtn{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:500}
+/* 收藏庫畫面 */
+.lib{margin-top:12px}
+.lib-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:12px}
+.lib-head h2{font-size:18px;margin:0;font-weight:700;flex:1;min-width:200px;text-wrap:balance}
+.lib-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0 10px}
+.lib-bar .cnt{font-size:13.5px;color:var(--muted)}
+#libTools,#libForm{display:flex;flex-direction:column;gap:10px}
+#libTools:not(:empty),#libForm:not(:empty){margin-top:10px}
+.libtool h3,.libform h3{margin:0 0 8px;font-size:15px}
+.libnote{background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:7px 12px;font-size:13.5px;margin-top:10px}
+.chip.add{border-style:dashed;color:var(--muted)}
+.inline{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.inline input{flex:1;min-width:140px;border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:7px 9px;min-height:38px}
+.speclist{display:flex;flex-direction:column;gap:6px}
+.photoprev{display:flex;align-items:center;gap:10px;margin-top:6px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:6px 14px;font-size:14px;min-height:36px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:500}
+.libgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.lcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.lphoto{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--bg);display:block}
+.lphoto.ph{display:grid;place-items:center;color:var(--muted);font-size:13px}
+.lbody{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.lcat{font-size:12.5px;color:var(--muted)}
+.lbody h3{margin:0;font-size:16px;display:flex;gap:7px;align-items:center;overflow-wrap:anywhere}
+.lprice{font:600 17px var(--mono)}
+.lspec{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;margin:4px 0 0;font-size:13.5px}
+.lspec dt{color:var(--muted)} .lspec dd{margin:0;overflow-wrap:anywhere}
+.lnote{margin:4px 0 0;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.lnote a,.cmp a{color:var(--accent)}
+.lbody>.row{margin-top:auto;padding-top:8px}
+.cmpwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.cmp{border-collapse:collapse;min-width:100%;font-size:14px}
+.cmp th,.cmp td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.cmp td{min-width:160px;max-width:260px;overflow-wrap:anywhere}
+.cmp th{position:sticky;left:0;z-index:1;background:var(--surface);color:var(--muted);font-weight:500;white-space:nowrap;box-shadow:1px 0 0 var(--line)}
+.cmp tr:last-child th,.cmp tr:last-child td{border-bottom:0}
+.cmp .hd td{font-weight:700}
+.cmp .cname{display:inline-flex;gap:7px;align-items:center}
+.cmp .num{font:500 14.5px var(--mono)} .cmp .min{color:var(--ok);font-weight:600}
+.cmp .nil{color:var(--muted)}
+.cmp .act .row{margin-top:0}
 .tbtn.add{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:500}
 .fcard .t{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
 .fcard .t b{overflow-wrap:anywhere}
@@ -144,8 +194,9 @@ button{cursor:pointer}
 .it.cat-cabinet .shape{fill:var(--cab)}
 .it.cat-door .shape{fill:var(--paper)}
 .it.cat-furniture .shape{fill:var(--furn-soft);stroke:var(--furn);stroke-width:1}
-.it.cat-furniture.has-c .shape{fill:var(--c);fill-opacity:.62;stroke:color-mix(in srgb,var(--c) 65%,var(--ink));stroke-width:1.1}
-.it.cat-furniture.has-c .bdg{fill:var(--ink)}
+.it.has-c .shape{fill:var(--c);fill-opacity:.92;stroke:color-mix(in srgb,var(--c) 62%,var(--ink));stroke-width:.9}
+.it.cat-furniture.has-c .shape{fill-opacity:.62;stroke-width:1.1}
+.it.has-c .bdg{fill:var(--ink)}
 .it.bad .shape,.it.cat-furniture.bad .shape{fill:var(--bad-soft);fill-opacity:1;stroke:var(--bad);stroke-width:1.2}
 .it.sel .shape,.it.cat-furniture.sel .shape{stroke:var(--accent);stroke-width:1.8}
 .it .deco{stroke:var(--muted);stroke-width:.5;fill:none}
@@ -178,6 +229,9 @@ button{cursor:pointer}
   .stage{position:static}
   #svg.fit{max-height:none}
   .toolbar .meta{display:none}
+  .libgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .lbody{padding:8px 10px 10px}
+  .lbody h3{font-size:15px}
   .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (prefers-reduced-motion:no-preference){ .btn,.chip,.tbtn,.li{transition:background-color .12s,border-color .12s} }
@@ -188,11 +242,12 @@ button{cursor:pointer}
   <header class="top">
     <h1>富紳活 尺寸簿</h1>
     <nav id="rooms" class="chips" aria-label="房間"></nav>
+    <button id="openLib" class="btn libbtn" type="button">待購買評估家具擺飾收藏庫</button>
     <div id="sync" class="sync" role="status">載入中…</div>
   </header>
   <div id="notice" class="notice" hidden></div>
 
-  <main class="layout">
+  <main class="layout" id="screenMain">
     <section class="stage" aria-label="立面圖">
       <div class="toolbar">
         <div id="views" class="chips" aria-label="視角"></div>
@@ -242,29 +297,39 @@ button{cursor:pointer}
             <label class="fld"><span>高</span><input id="f-h" type="number" inputmode="decimal" min="0" step="0.5"></label>
           </div>
           <div class="fld" style="margin-top:8px"><span>顏色</span><div id="f-colors"></div></div>
-          <details class="more" id="f-more">
-            <summary>更多資料（選填）：價格、店家、連結、照片</summary>
-            <div class="grid2">
-              <label class="fld"><span>價格（元）</span><input id="f-price" type="number" inputmode="numeric" min="0" step="1"></label>
-              <label class="fld"><span>店家／品牌</span><input id="f-shop" type="text" maxlength="40"></label>
-            </div>
-            <label class="fld" style="margin-top:8px"><span>商品連結</span><input id="f-url" type="url" inputmode="url" placeholder="https://"></label>
-            <label class="fld" style="margin-top:8px"><span>備註</span><input id="f-note" type="text" maxlength="200"></label>
-            <div class="fld" style="margin-top:8px" id="f-photoWrap"><span>照片</span><input id="f-photo" type="file" accept="image/*"><div id="f-photoPrev"></div></div>
-          </details>
           <div class="row">
             <button class="btn primary" type="button" id="furnPlace">放到圖上</button>
             <button class="btn" type="button" id="furnSave">存進收藏庫</button>
             <button class="btn" type="button" id="furnClear">清空</button>
           </div>
           <p class="small-note" id="furnMsg" role="status"></p>
-          <p class="small-note">圖上比對的是寬和高；深度會記錄下來，放到圖上後可以把寬、深互換（轉 90°）。</p>
+          <p class="small-note">圖上比對的是寬和高；深度會記錄下來，放到圖上後可以把寬、深互換（轉 90°）。價格、類別、圖片請到完整收藏庫填寫。</p>
         </form>
         <div id="results"></div>
         <div id="saved"></div>
       </div>
     </aside>
   </main>
+
+  <section class="lib" id="screenLib" aria-label="待購買評估家具擺飾收藏庫" hidden>
+    <div class="lib-head">
+      <button class="btn" id="libBack" type="button">← 回到立面圖</button>
+      <h2>待購買評估家具擺飾收藏庫</h2>
+      <button class="btn primary" id="libAdd" type="button">＋ 新增家具擺飾</button>
+    </div>
+    <div class="chips" id="libCats" aria-label="類別"></div>
+    <div id="libTools"></div>
+    <div id="libForm"></div>
+    <div class="libnote" id="libNote" role="status" hidden></div>
+    <div class="lib-bar">
+      <div class="seg" role="group" aria-label="顯示方式">
+        <button type="button" id="libModeCards" aria-pressed="true">卡片</button>
+        <button type="button" id="libModeTable" aria-pressed="false">比較表</button>
+      </div>
+      <span class="cnt" id="libCount"></span>
+    </div>
+    <div id="libBody"></div>
+  </section>
 </div>
 
 <script src="config.js"></script>
@@ -344,7 +409,7 @@ const $ = s => document.querySelector(s);
 const svgEl = $('#svg'), gBase = $('#gBase'), gItems = $('#gItems'), gNames = $('#gNames'), gDims = $('#gDims'), gOver = $('#gOver');
 
 const S = { data:null, room:null, view:null, sel:null, tab:'items', zoom:1, showDims:true, slotHi:null,
-            draft:{id:null,name:'',w:'',d:'',h:'',color:'',price:'',shop:'',url:'',note:'',photo:'',file:null} };
+            screen:'main', draft:{id:null,name:'',w:'',d:'',h:'',color:''} };
 
 /* ---------- 小工具 ---------- */
 function setAttrs(e, a){
@@ -566,7 +631,7 @@ function drawItem(id, it){
   const v=view(), H=v.height, W=v.width, g=geo(it), sel=S.sel===id;
   const cls=['it','kind-'+it.kind]; if (it.kind==='box') cls.push('cat-'+(CATS[it.cat]?it.cat:'other'));
   if (sel) cls.push('sel'); if (sel && !it.locked) cls.push('free'); if (problems(id,it).length) cls.push('bad');
-  const col=it.kind==='box' && it.cat==='furniture' ? okColor(it.color) : '';
+  const col=it.kind==='box' ? okColor(it.color) : '';   // 圖面原有的物件也可以自訂顏色
   if (col) cls.push('has-c');
   const grp=s('g',{class:cls.join(' '),'data-id':id,style:col?'--c:'+col:null});
   const cx=g.x+g.w/2, cy=H-(g.y+g.h/2);
@@ -712,9 +777,9 @@ function renderEditor(){
         h('div',{class:'fld'}, h('span',{text:'方向'}),
           h('button',{class:'btn',type:'button',disabled:!!it.locked || !(n(it.d)>0),text:'轉 90°（寬深互換）',
             onclick:()=>{ const w=n(it.w); it.w=n(it.d); it.d=w; touched(id); renderEditor(); renderList(); }}))));
-      kids.push(h('div',{class:'fld',style:'margin-top:8px'}, h('span',{text:'顏色'}),
-        swatches(it.color, c=>{ it.color=c; save(itemPath(id)); renderStage(); renderEditor(); })));
     }
+    kids.push(h('div',{class:'fld',style:'margin-top:8px'}, h('span',{text:it.cat==='furniture'?'顏色':'顏色（不指定時依類別的畫法）'}),
+      swatches(it.color, c=>{ it.color=c; save(itemPath(id)); renderStage(); renderEditor(); })));
   } else if (it.kind==='mark'){
     kids.push(h('div',{style:'margin-top:8px'}, field('備註', note)));
     kids.push(h('div',{class:'grid2'}, field('離左牆',numIn('x')), field('離地',numIn('y'))));
@@ -739,7 +804,7 @@ function renderEditor(){
     const inLib=!!(it.fid && S.data.furniture && S.data.furniture[it.fid]);
     lib=h('button',{class:'btn',type:'button',disabled:inLib,text:inLib?'已在收藏庫':'存進收藏庫',onclick:()=>{
       const fid=uid('f'); if (!S.data.furniture) S.data.furniture={};
-      S.data.furniture[fid]={name:it.name||'未命名擺設',w:n(it.w),d:n(it.d),h:n(it.h),color:okColor(it.color),price:'',shop:'',url:'',note:it.note||'',photo:'',ts:Date.now()};
+      S.data.furniture[fid]={name:it.name||'未命名擺設',w:n(it.w),d:n(it.d),h:n(it.h),color:okColor(it.color),cat:'',price:'',shop:'',url:'',note:it.note||'',photo:'',specs:{},ts:Date.now()};
       save('furniture/'+fid); it.fid=fid; save(itemPath(id)); renderEditor(); if (S.tab==='furn') renderSaved();
     }});
   }
@@ -849,17 +914,62 @@ function orientations(f){
   if (f.d>0 && f.d!==f.w) o.push({key:'d',label:'側面靠牆（佔寬 '+fmt(f.d)+'）',w:f.d});
   return o;
 }
-const COLORS=['#C98B2B','#B5523B','#8B5E3C','#7A8F3C','#2F8F83','#3F6FB5','#7B5EA7','#8A8F94','#3B3F45','#E4DCCB'];
+const MATERIALS=[['#2A2C2F','黑鐵件'],['#676C72','灰鐵件'],['#B7BCC1','不鏽鋼'],['#DCC09A','淺色木'],['#B88A58','原木'],['#6B4830','胡桃木']];
+const COLORS=['#C98B2B','#B5523B','#7A8F3C','#2F8F83','#3F6FB5','#7B5EA7','#E4DCCB','#F2F1ED'];
 function swatches(cur, onPick){
   cur=okColor(cur).toUpperCase();
   const wrap=h('div',{class:'swatches'});
-  wrap.append(h('button',{class:'sw none',type:'button',title:'預設','aria-label':'預設顏色','aria-pressed':String(!cur),onclick:()=>onPick('')}));
+  for (const [c,label] of MATERIALS)
+    wrap.append(h('button',{class:'swm',type:'button','aria-pressed':String(cur===c),onclick:()=>onPick(c)}, h('span',{class:'dot',style:'--c:'+c}), label));
+  wrap.append(h('span',{class:'swbreak'}));
+  wrap.append(h('button',{class:'sw none',type:'button',title:'預設（不指定顏色）','aria-label':'預設，不指定顏色','aria-pressed':String(!cur),onclick:()=>onPick('')}));
   for (const c of COLORS) wrap.append(h('button',{class:'sw',type:'button',style:'--c:'+c,'aria-label':'顏色 '+c,'aria-pressed':String(cur===c),onclick:()=>onPick(c)}));
   wrap.append(h('input',{class:'swc',type:'color',value:cur||COLORS[0],title:'自訂顏色','aria-label':'自訂顏色',onchange:e=>onPick(e.target.value)}));
   return wrap;
 }
-const FKEYS=['name','w','d','h','price','shop','url','note'];
-const emptyDraft=()=>({id:null,name:'',w:'',d:'',h:'',color:'',price:'',shop:'',url:'',note:'',photo:'',file:null});
+
+/* 收藏庫的共用小工具 */
+const furnAll = () => Object.entries(S.data.furniture||{}).filter(e=>e[1] && typeof e[1]==='object');
+const hasDims = f => !!f && n(f.w)>0 && n(f.h)>0;
+const specOf = (id,f) => ({name:f.name||'',w:n(f.w),d:n(f.d),h:n(f.h),color:okColor(f.color),fid:id});
+const hasPrice = f => f.price!=='' && f.price!=null && Number.isFinite(Number(f.price)) && Number(f.price)>=0;
+const priceText = f => hasPrice(f) ? 'NT$ '+Number(f.price).toLocaleString('zh-TW') : '';
+const sizeText = f => hasDims(f) ? '寬 '+fmt(n(f.w))+(n(f.d)>0?' × 深 '+fmt(n(f.d)):'')+' × 高 '+fmt(n(f.h)) : '';
+// 收藏庫的資料改了，已經放在各面牆上的同一件跟著更新
+function syncPlaced(id, old, rec){
+  for (const [rid,room] of Object.entries(S.data.rooms)) for (const [vid,v] of Object.entries(room.views||{}))
+    for (const [pid,p] of Object.entries(v.items||{})){
+      if (!p || p.fid!==id) continue;
+      p.name=rec.name; p.color=rec.color;
+      if (hasDims(rec)){
+        const turned=old && n(old.d)>0 && n(p.w)===n(old.d) && n(old.w)!==n(old.d);
+        p.h=n(rec.h); p.w=turned && n(rec.d)>0?n(rec.d):n(rec.w); p.d=turned?n(rec.w):n(rec.d);
+      }
+      save('rooms/'+rid+'/views/'+vid+'/items/'+pid);
+    }
+}
+function shrinkImage(file, max){
+  return new Promise((res,rej)=>{
+    const img=new Image(), u=URL.createObjectURL(file);
+    img.onload=()=>{
+      const k=Math.min(1,(max||1280)/Math.max(img.width,img.height)), c=document.createElement('canvas');
+      c.width=Math.max(1,Math.round(img.width*k)); c.height=Math.max(1,Math.round(img.height*k));
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(u);
+      c.toBlob(b=>b?res(b):rej(new Error('encode')),'image/jpeg',0.82);
+    };
+    img.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error('image')); };
+    img.src=u;
+  });
+}
+function armDelete(e, label, run){
+  const b=e.currentTarget;
+  if (!b.classList.contains('arm')){ b.classList.add('arm'); b.textContent='確定刪除？'; setTimeout(()=>{ b.classList.remove('arm'); b.textContent=label; },3000); return; }
+  run();
+}
+
+/* 立面圖旁的「擺設」分頁：快速新增到圖上、比對空位、從收藏庫挑一件放上去 */
+const FKEYS=['name','w','d','h'];
+const emptyDraft=()=>({id:null,name:'',w:'',d:'',h:'',color:''});
 function setMsg(t, err){ const el=$('#furnMsg'); el.textContent=t||''; el.classList.toggle('err',!!err); }
 function draftDims(){ const d=S.draft, w=parseFloat(d.w), hh=parseFloat(d.h), dd=parseFloat(d.d);
   return (w>0 && hh>0) ? {w:r1(w),h:r1(hh),d:dd>0?r1(dd):0} : null; }
@@ -914,121 +1024,310 @@ function placeItem(spec, q, wUsed){
   save(itemPath(id)); S.sel=id; S.slotHi=null; renderAll();
   $('#scroll').scrollIntoView({block:'nearest',behavior:'smooth'});
 }
-function shrinkImage(file, max){
-  return new Promise((res,rej)=>{
-    const img=new Image(), u=URL.createObjectURL(file);
-    img.onload=()=>{
-      const k=Math.min(1,(max||1280)/Math.max(img.width,img.height)), c=document.createElement('canvas');
-      c.width=Math.max(1,Math.round(img.width*k)); c.height=Math.max(1,Math.round(img.height*k));
-      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(u);
-      c.toBlob(b=>b?res(b):rej(new Error('encode')),'image/jpeg',0.82);
-    };
-    img.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error('image')); };
-    img.src=u;
-  });
-}
-async function saveDraft(){
+// 從分頁的表單快速存一件新的；類別、價格、照片到完整收藏庫再補
+function saveDraft(){
   const sp=draftSpec(); if (!sp) return null;
-  const d=S.draft, id=d.id||uid('f');
-  if (!S.data.furniture) S.data.furniture={};
-  const old=S.data.furniture[id];
-  let photo=d.photo||'', photoErr=false;
-  if (d.file){
-    setMsg('照片上傳中…');
-    try { photo=await store.uploadPhoto(await shrinkImage(d.file), id+'-'+Date.now().toString(36)+'.jpg'); }
-    catch(e){ photoErr=true; photo=old ? old.photo||'' : ''; }
-  }
-  if (old && old.photo && old.photo!==photo) store.removePhoto(old.photo);
-  const url=/^https?:\/\//i.test(d.url.trim())?d.url.trim():'', price=parseFloat(d.price);
-  const rec={name:sp.name||'未命名擺設',w:sp.w,d:sp.d,h:sp.h,color:sp.color,price:price>=0?price:'',shop:d.shop.trim(),url,note:d.note.trim(),photo,ts:old?old.ts:Date.now()};
-  S.data.furniture[id]=rec; save('furniture/'+id);
-  // 已經放在各面牆上的同一件擺設，名稱、顏色、尺寸跟著更新
-  for (const [rid,room] of Object.entries(S.data.rooms)) for (const [vid,v] of Object.entries(room.views||{}))
-    for (const [pid,p] of Object.entries(v.items||{})){
-      if (!p || p.fid!==id) continue;
-      const turned=old && n(old.d)>0 && n(p.w)===n(old.d) && n(old.w)!==n(old.d);
-      p.name=rec.name; p.color=rec.color; p.h=rec.h; p.w=turned?rec.d:rec.w; p.d=turned?rec.w:rec.d;
-      save('rooms/'+rid+'/views/'+vid+'/items/'+pid);
-    }
-  return {id, photoErr, isNew:!old};
+  const id=uid('f'); if (!S.data.furniture) S.data.furniture={};
+  S.data.furniture[id]={name:sp.name||'未命名擺設',cat:'',w:sp.w,d:sp.d,h:sp.h,color:sp.color,price:'',shop:'',url:'',note:'',photo:'',specs:{},ts:Date.now()};
+  save('furniture/'+id); return id;
 }
-function renderFormExtras(){
-  const d=S.draft;
-  $('#f-colors').replaceChildren(swatches(d.color, c=>{ d.color=c; renderFormExtras(); }));
-  const prev=$('#f-photoPrev'), src=d.file ? (d.fileUrl||(d.fileUrl=URL.createObjectURL(d.file))) : store.photoUrl(d.photo);
-  prev.replaceChildren();
-  if (src) prev.append(h('img',{class:'thumb big',src,alt:'擺設照片'}),
-    h('button',{class:'btn small',type:'button',text:'移除照片',onclick:()=>{ if (d.fileUrl) URL.revokeObjectURL(d.fileUrl); d.file=null; d.fileUrl=''; d.photo=''; $('#f-photo').value=''; renderFormExtras(); }}));
-  $('#f-photoWrap').hidden=!store.remote;
-}
+function renderFormExtras(){ $('#f-colors').replaceChildren(swatches(S.draft.color, c=>{ S.draft.color=c; renderFormExtras(); })); }
 function loadDraft(id){
   const f=id && S.data.furniture && S.data.furniture[id];
-  if (S.draft.fileUrl) URL.revokeObjectURL(S.draft.fileUrl);
-  S.draft = f ? {id,name:f.name||'',w:String(f.w),d:f.d?String(f.d):'',h:String(f.h),color:okColor(f.color),price:f.price===''||f.price==null?'':String(f.price),
-                 shop:f.shop||'',url:f.url||'',note:f.note||'',photo:f.photo||'',file:null} : emptyDraft();
+  S.draft = f ? {id,name:f.name||'',w:n(f.w)>0?String(f.w):'',d:n(f.d)>0?String(f.d):'',h:n(f.h)>0?String(f.h):'',color:okColor(f.color)} : emptyDraft();
   for (const k of FKEYS) $('#f-'+k).value=S.draft[k];
-  $('#f-photo').value='';
-  $('#furnTitle').textContent=f?'編輯：'+f.name:'新增擺設';
-  $('#furnSave').textContent=f?'更新收藏庫':'存進收藏庫';
-  $('#f-more').open=!!(f && (f.price!==''&&f.price!=null || f.shop || f.url || f.note || f.photo));
+  $('#furnTitle').textContent=f?'比對空位：'+f.name:'新增擺設';
+  $('#furnSave').hidden=!!f;
   setMsg(''); renderFormExtras();
   S.slotHi=null; renderOver(); renderResults(); renderSaved();
 }
-function armDelete(e, label, run){
-  const b=e.currentTarget;
-  if (!b.classList.contains('arm')){ b.classList.add('arm'); b.textContent='確定刪除？'; setTimeout(()=>{ b.classList.remove('arm'); b.textContent=label; },3000); return; }
-  run();
-}
 function renderSaved(){
   const box=$('#saved'), v=view();
-  const all=Object.entries(S.data.furniture||{}).filter(e=>e[1] && typeof e[1]==='object').sort((a,b)=>n(b[1].ts)-n(a[1].ts));
-  const kids=[h('h2',{style:'font-size:15px;margin:16px 0 2px',text:'收藏庫（'+all.length+'）'})];
-  if (!all.length) kids.push(h('p',{class:'empty',text:'收藏庫還是空的。在上面填好資料按「存進收藏庫」，之後隨時可以放到任何一面牆上，大家也都看得到。'}));
+  const all=furnAll().sort((a,b)=>n(b[1].ts)-n(a[1].ts));
+  const kids=[h('div',{class:'saved-head'}, h('h2',{text:'收藏庫（'+all.length+'）'}),
+    h('button',{class:'btn small',type:'button',text:'開啟完整收藏庫',onclick:()=>go('lib')}))];
+  if (!all.length) kids.push(h('p',{class:'empty',text:'收藏庫還是空的。在上面填好尺寸按「存進收藏庫」，或到完整收藏庫新增。'}));
   for (const [id,f] of all){
-    const slots=computeSlots(v,sameFid(id));
-    const okN=slots.filter(q=>orientations(f).some(o=>fits(q,o.w,f.h).ok)).length;
-    const info=[]; if (f.price!=='' && f.price!=null && n(f.price)>=0) info.push('NT$ '+n(f.price).toLocaleString('zh-TW')); if (f.shop) info.push(f.shop);
     const body=h('div',{class:'fbody'},
-      h('div',{class:'t'}, okColor(f.color)?h('span',{class:'dot',style:'--c:'+okColor(f.color)}):null, h('b',{text:f.name}),
-        h('span',{class:'sz',text:'寬 '+fmt(f.w)+(f.d?' × 深 '+fmt(f.d):'')+' × 高 '+fmt(f.h)})),
-      h('div',{class:'t',style:'margin-top:3px'}, info.length?h('span',{class:'inf',text:info.join('・')}):null,
-        h('span',{class:'pill '+(okN?'ok':'no'),text:okN?'這面牆可放 '+okN+' 處':'這面牆放不下'})));
-    if (f.note) body.append(h('p',{text:f.note}));
-    if (/^https?:\/\//i.test(f.url||'')) body.append(h('p',{}, h('a',{href:f.url,target:'_blank',rel:'noopener noreferrer',text:'開啟商品頁'})));
+      h('div',{class:'t'}, okColor(f.color)?h('span',{class:'dot',style:'--c:'+okColor(f.color)}):null, h('b',{text:f.name||'未命名'}),
+        h('span',{class:'sz',text:sizeText(f)||'尚未填尺寸'})));
+    const info=[priceText(f), f.shop||''].filter(Boolean), line=h('div',{class:'t',style:'margin-top:3px'});
+    if (info.length) line.append(h('span',{class:'inf',text:info.join('・')}));
+    if (hasDims(f)){
+      const okN=computeSlots(v,sameFid(id)).filter(q=>orientations(f).some(o=>fits(q,o.w,n(f.h)).ok)).length;
+      line.append(h('span',{class:'pill '+(okN?'ok':'no'),text:okN?'這面牆可放 '+okN+' 處':'這面牆放不下'}));
+    }
+    if (line.childNodes.length) body.append(line);
     body.append(h('div',{class:'row',style:'margin-top:6px'},
-      h('button',{class:'btn small primary',type:'button',text:'放到圖上',onclick:()=>placeItem({name:f.name,w:n(f.w),d:n(f.d),h:n(f.h),color:okColor(f.color),fid:id})}),
-      h('button',{class:'btn small',type:'button',text:S.draft.id===id?'編輯中':'編輯／比對',onclick:()=>{ loadDraft(id); $('#furnForm').scrollIntoView({block:'nearest',behavior:'smooth'}); }}),
-      h('button',{class:'btn small danger',type:'button',text:'刪除',onclick:e=>armDelete(e,'刪除',()=>{
-        if (f.photo) store.removePhoto(f.photo);
-        delete S.data.furniture[id]; save('furniture/'+id);
-        if (S.draft.id===id) loadDraft(null); else renderSaved();
-      })})));
+      h('button',{class:'btn small primary',type:'button',disabled:!hasDims(f),title:hasDims(f)?null:'要先填寬和高才能放到圖上',text:'放到圖上',onclick:()=>placeItem(specOf(id,f))}),
+      hasDims(f)?h('button',{class:'btn small',type:'button',text:S.draft.id===id?'比對中':'比對空位',onclick:()=>{ loadDraft(id); $('#furnForm').scrollIntoView({block:'nearest',behavior:'smooth'}); }}):null,
+      h('button',{class:'btn small',type:'button',text:'詳細／編輯',onclick:()=>{ go('lib',()=>openLibForm(id)); }})));
     const src=store.photoUrl(f.photo);
     kids.push(h('div',{class:'fcard'}, src?h('img',{class:'thumb',src,alt:'',loading:'lazy',onerror:e=>e.currentTarget.remove()}):null, body));
   }
   box.replaceChildren(...kids);
 }
 for (const k of FKEYS)
-  $('#f-'+k).addEventListener('input', e=>{ S.draft[k]=e.target.value; if (k==='w'||k==='d'||k==='h'){ setMsg(''); renderResults(); } });
-$('#f-photo').addEventListener('change', e=>{
-  const file=e.target.files && e.target.files[0]; if (!file) return;
-  if (S.draft.fileUrl) URL.revokeObjectURL(S.draft.fileUrl);
-  S.draft.file=file; S.draft.fileUrl=''; renderFormExtras();
-});
+  $('#f-'+k).addEventListener('input', e=>{ S.draft[k]=e.target.value; if (k!=='name'){ setMsg(''); renderResults(); } });
 $('#furnForm').addEventListener('submit', e=>e.preventDefault());
 $('#furnPlace').addEventListener('click', ()=>{ const sp=draftSpec(); if (sp){ setMsg(''); placeItem(sp); } });
-$('#furnSave').addEventListener('click', async e=>{
-  const b=e.currentTarget; b.disabled=true;
-  let r=null; try { r=await saveDraft(); } finally { b.disabled=false; }
-  if (!r) return;
-  loadDraft(null); renderStage(); renderEditor();
-  setMsg(r.photoErr ? '已存進收藏庫，但照片沒有上傳成功。' : (r.isNew?'已存進收藏庫。':'收藏庫已更新。'), r.photoErr);
+$('#furnSave').addEventListener('click', ()=>{
+  if (!saveDraft()) return;
+  loadDraft(null); setMsg('已存進收藏庫。類別、價格、照片可以到完整收藏庫補上。');
 });
 $('#furnClear').addEventListener('click', ()=>loadDraft(null));
 $('#addDecor').addEventListener('click', ()=>{
   setTab('furn'); loadDraft(null);
   $('#furnForm').scrollIntoView({block:'start',behavior:'smooth'}); $('#f-name').focus({preventScroll:true});
 });
+
+/* ---------- 待購買評估家具擺飾收藏庫（獨立畫面） ---------- */
+const L={cat:'all',mode:'cards',tools:false,adding:false,form:null,note:''};
+const catsAll = () => Object.entries(S.data.categories||{}).filter(e=>e[1] && typeof e[1]==='object').sort((a,b)=>n(a[1].ts)-n(b[1].ts));
+const catOf = id => (id && S.data.categories && S.data.categories[id] && typeof S.data.categories[id]==='object') ? S.data.categories[id] : null;
+const specsOf = c => (c && Array.isArray(c.specs)) ? c.specs.filter(x=>x && x.id) : [];
+function libItems(){
+  const all=furnAll();
+  if (L.cat==='all') return all;
+  if (L.cat==='none') return all.filter(e=>!catOf(e[1].cat));
+  return all.filter(e=>e[1].cat===L.cat);
+}
+let afterScreen=null;
+function applyScreen(){
+  const lib=location.hash==='#library';
+  S.screen=lib?'lib':'main';
+  $('#screenMain').hidden=lib; $('#screenLib').hidden=!lib; $('#rooms').hidden=lib; $('#openLib').hidden=lib;
+  if (lib) renderLib(); else renderAll();
+  const fn=afterScreen; afterScreen=null;
+  if (fn) fn(); else window.scrollTo(0,0);
+}
+function go(screen, then){
+  const want=screen==='lib'?'#library':'';
+  afterScreen=then||null;
+  if ((location.hash||'')===want || (!want && location.hash==='#')) applyScreen(); else location.hash=want;
+}
+window.addEventListener('hashchange', applyScreen);
+
+function renderLib(){ renderLibCats(); renderLibTools(); renderLibForm(); renderLibBody(); }
+function renderLibCats(){
+  const all=furnAll(), cats=catsAll(), none=all.filter(e=>!catOf(e[1].cat)).length;
+  if (L.cat!=='all' && L.cat!=='none' && !catOf(L.cat)) L.cat='all';
+  if (L.cat==='none' && !none) L.cat='all';
+  const chip=(id,label,count)=>h('button',{class:'chip',type:'button','aria-pressed':String(L.cat===id),text:label+'（'+count+'）',
+    onclick:()=>{ L.cat=id; L.tools=false; L.note=''; renderLib(); }});
+  const kids=[chip('all','全部',all.length)];
+  for (const [id,c] of cats) kids.push(chip(id,c.name||'未命名類別',all.filter(e=>e[1].cat===id).length));
+  if (none && cats.length) kids.push(chip('none','未分類',none));
+  kids.push(h('button',{class:'chip add',type:'button',text:'＋ 新增類別',onclick:()=>{ L.adding=true; renderLibTools(); const i=$('#lib-newcat'); if (i) i.focus(); }}));
+  $('#libCats').replaceChildren(...kids);
+}
+function renderLibTools(){
+  const box=$('#libTools'), kids=[];
+  if (L.adding){
+    const inp=h('input',{id:'lib-newcat',type:'text',maxlength:'20',placeholder:'類別名稱，例如：檯燈、椅子','aria-label':'新類別的名稱'});
+    const add=()=>{
+      const name=inp.value.trim(); if (!name){ inp.focus(); return; }
+      const id=uid('c'); if (!S.data.categories) S.data.categories={};
+      S.data.categories[id]={name,specs:[],ts:Date.now()}; save('categories/'+id);
+      L.adding=false; L.cat=id; L.tools=true; renderLib();
+    };
+    inp.addEventListener('keydown',e=>{ if (e.key==='Enter'){ e.preventDefault(); add(); } });
+    kids.push(h('div',{class:'card libtool'}, h('h3',{text:'新增類別'}),
+      h('div',{class:'inline'}, inp, h('button',{class:'btn primary',type:'button',text:'新增',onclick:add}),
+        h('button',{class:'btn',type:'button',text:'取消',onclick:()=>{ L.adding=false; renderLibTools(); }}))));
+  }
+  const cid=L.cat, c=catOf(cid);
+  if (c && !L.tools) kids.push(h('div',{class:'row',style:'margin-top:0'},
+    h('button',{class:'btn small',type:'button',text:'管理「'+(c.name||'未命名類別')+'」：改名、規格項目',onclick:()=>{ L.tools=true; renderLibTools(); }})));
+  if (c && L.tools){
+    const saveCat=()=>save('categories/'+cid);
+    const nameIn=h('input',{type:'text',maxlength:'20',value:c.name||'','aria-label':'類別名稱',
+      oninput:e=>{ c.name=e.target.value.trim(); saveCat(); }, onchange:()=>{ renderLibCats(); renderLibBody(); }});
+    const rows=specsOf(c).map(sp=>h('div',{class:'inline'},
+      h('input',{type:'text',maxlength:'20',value:sp.name||'','aria-label':'規格項目名稱',
+        oninput:e=>{ sp.name=e.target.value.trim(); saveCat(); }, onchange:()=>{ renderLibBody(); if (L.form) renderLibForm(); }}),
+      h('button',{class:'btn small danger',type:'button',text:'移除',onclick:e=>armDelete(e,'移除',()=>{
+        c.specs=specsOf(c).filter(x=>x.id!==sp.id); saveCat(); renderLibTools(); renderLibBody(); if (L.form) renderLibForm(); })})));
+    const newIn=h('input',{id:'lib-newspec',type:'text',maxlength:'20',placeholder:'例如：瓦數、材質、承重','aria-label':'新規格項目的名稱'});
+    const addSpec=()=>{
+      const name=newIn.value.trim(); if (!name){ newIn.focus(); return; }
+      c.specs=specsOf(c).concat({id:uid('s'),name}); saveCat();
+      renderLibTools(); renderLibBody(); if (L.form) renderLibForm();
+      const i=$('#lib-newspec'); if (i) i.focus();
+    };
+    newIn.addEventListener('keydown',e=>{ if (e.key==='Enter'){ e.preventDefault(); addSpec(); } });
+    kids.push(h('div',{class:'card libtool'},
+      h('h3',{text:'管理類別'}),
+      h('label',{class:'fld'}, h('span',{text:'類別名稱'}), nameIn),
+      h('div',{class:'fld',style:'margin-top:10px'}, h('span',{text:'規格項目（這個類別每一件都會有這些欄位，比較表會逐項對齊）'}),
+        h('div',{class:'speclist'}, ...rows, h('div',{class:'inline'}, newIn, h('button',{class:'btn',type:'button',text:'＋ 加入規格項目',onclick:addSpec})))),
+      h('div',{class:'row'},
+        h('button',{class:'btn',type:'button',text:'完成',onclick:()=>{ L.tools=false; renderLib(); }}),
+        h('button',{class:'btn danger',type:'button',text:'刪除這個類別',onclick:e=>armDelete(e,'刪除這個類別',()=>{
+          for (const [fid,f] of furnAll()) if (f.cat===cid){ f.cat=''; save('furniture/'+fid); }
+          delete S.data.categories[cid]; save('categories/'+cid);
+          L.cat='all'; L.tools=false; L.note='類別已刪除，裡面的東西改放到「未分類」。'; renderLib();
+        })}))));
+  }
+  box.replaceChildren(...kids);
+}
+function openLibForm(id){
+  const f=id && S.data.furniture && S.data.furniture[id];
+  if (L.form && L.form.fileUrl) URL.revokeObjectURL(L.form.fileUrl);
+  const str=v=>(v===''||v==null)?'':String(v), dim=v=>n(v)>0?String(v):'';
+  L.form = f
+    ? {id,cat:catOf(f.cat)?f.cat:'',name:f.name||'',price:hasPrice(f)?str(f.price):'',shop:f.shop||'',url:f.url||'',w:dim(f.w),d:dim(f.d),h:dim(f.h),
+       color:okColor(f.color),note:f.note||'',photo:f.photo||'',file:null,fileUrl:'',specs:Object.assign({},f.specs||{}),msg:'',err:false}
+    : {id:null,cat:catOf(L.cat)?L.cat:'',name:'',price:'',shop:'',url:'',w:'',d:'',h:'',color:'',note:'',photo:'',file:null,fileUrl:'',specs:{},msg:'',err:false};
+  L.note=''; renderLibForm(); renderLibBody();
+  $('#libForm').scrollIntoView({block:'start',behavior:'smooth'});
+  const i=$('#lf-name'); if (i) i.focus({preventScroll:true});
+}
+function closeLibForm(){ if (L.form && L.form.fileUrl) URL.revokeObjectURL(L.form.fileUrl); L.form=null; renderLibForm(); }
+function renderLibForm(){
+  const box=$('#libForm'), F=L.form;
+  if (!F){ box.replaceChildren(); return; }
+  const inp=(key,attrs)=>h('input',Object.assign({id:'lf-'+key,value:F[key]||'',oninput:e=>{ F[key]=e.target.value; }},attrs||{}));
+  const numAttrs={type:'number',inputmode:'decimal',min:'0',step:'0.5'};
+  const sel=h('select',{id:'lf-cat',onchange:e=>{ F.cat=e.target.value; renderLibForm(); }},
+    h('option',{value:'',text:'未分類'}), ...catsAll().map(([id,c])=>h('option',{value:id,text:c.name||'未命名類別'})));
+  sel.value=F.cat;
+  const specs=specsOf(catOf(F.cat));
+  const src=F.file ? (F.fileUrl||(F.fileUrl=URL.createObjectURL(F.file))) : store.photoUrl(F.photo);
+  const file=h('input',{id:'lf-photo',type:'file',accept:'image/*',onchange:e=>{
+    const fl=e.target.files && e.target.files[0]; if (!fl) return;
+    if (F.fileUrl) URL.revokeObjectURL(F.fileUrl); F.file=fl; F.fileUrl=''; renderLibForm(); }});
+  const prev=h('div',{class:'photoprev'});
+  if (src) prev.append(h('img',{class:'thumb big',src,alt:'目前的照片',onerror:e=>e.currentTarget.remove()}),
+    h('button',{class:'btn small',type:'button',text:'移除照片',onclick:()=>{ if (F.fileUrl) URL.revokeObjectURL(F.fileUrl); F.file=null; F.fileUrl=''; F.photo=''; renderLibForm(); }}));
+  const kids=[
+    h('h3',{text:F.id?'編輯：'+(F.name||'未命名'):'新增家具擺飾'}),
+    h('div',{class:'grid2',style:'margin-top:0'}, field('類別', sel), field('名稱（必填）', inp('name',{type:'text',maxlength:'60',placeholder:'例如：MUJI 橡木層架'}))),
+    h('div',{class:'grid2'}, field('價格（元）', inp('price',{type:'number',inputmode:'numeric',min:'0',step:'1'})), field('店家／品牌', inp('shop',{type:'text',maxlength:'40'}))),
+    h('div',{style:'margin-top:8px'}, field('商品連結', inp('url',{type:'url',inputmode:'url',placeholder:'https://'}))),
+    h('div',{class:'grid4',style:'grid-template-columns:repeat(3,minmax(0,1fr))'},
+      field('寬（公分）', inp('w',numAttrs)), field('深（公分）', inp('d',numAttrs)), field('高（公分）', inp('h',numAttrs))),
+    h('p',{class:'small-note',style:'margin-top:4px',text:'尺寸可以先不填；填了寬和高才能放到立面圖上比對。'})
+  ];
+  if (specs.length) kids.push(h('div',{class:'grid2'}, ...specs.map(sp=>field(sp.name||'規格',
+    h('input',{type:'text',maxlength:'60',value:F.specs[sp.id]||'',oninput:e=>{ F.specs[sp.id]=e.target.value; }})))));
+  else if (catOf(F.cat)) kids.push(h('p',{class:'small-note',text:'這個類別還沒有設定規格項目。到上方「管理類別」加入後，這裡就會多出對應的欄位。'}));
+  kids.push(
+    h('div',{class:'fld',style:'margin-top:8px'}, h('span',{text:'顏色（放到圖上時用這個顏色）'}), swatches(F.color, c=>{ F.color=c; renderLibForm(); })),
+    h('div',{style:'margin-top:8px'}, field('備註', h('textarea',{id:'lf-note',maxlength:'300',rows:'2',text:F.note||'',oninput:e=>{ F.note=e.target.value; }}))));
+  if (store.remote) kids.push(h('div',{class:'fld',style:'margin-top:8px'}, h('span',{text:'圖片（一張）'}), file, prev));
+  kids.push(
+    h('div',{class:'row'},
+      h('button',{class:'btn primary',type:'button',text:F.id?'儲存修改':'加入收藏庫',onclick:e=>saveLibForm(e.currentTarget)}),
+      h('button',{class:'btn',type:'button',text:'取消',onclick:closeLibForm})),
+    h('p',{class:'small-note'+(F.err?' err':''),id:'lf-msg',role:'status',text:F.msg||''}));
+  box.replaceChildren(h('div',{class:'card libform'}, ...kids));
+}
+async function saveLibForm(btn){
+  const F=L.form; if (!F) return;
+  const say=(t,err)=>{ F.msg=t; F.err=!!err; const el=$('#lf-msg'); if (el){ el.textContent=t; el.classList.toggle('err',!!err); } };
+  const name=F.name.trim();
+  if (!name){ say('請先填名稱。',true); $('#lf-name').focus(); return; }
+  btn.disabled=true;
+  const id=F.id||uid('f'); if (!S.data.furniture) S.data.furniture={};
+  const old=S.data.furniture[id];
+  let photo=F.photo||'', photoErr=false;
+  if (F.file){
+    say('圖片上傳中…');
+    try { photo=await store.uploadPhoto(await shrinkImage(F.file), id+'-'+Date.now().toString(36)+'.jpg'); }
+    catch(e){ photoErr=true; photo=old ? old.photo||'' : ''; }
+  }
+  if (old && old.photo && old.photo!==photo) store.removePhoto(old.photo);
+  const dim=v=>{ const x=parseFloat(v); return x>0?r1(x):''; }, price=parseFloat(F.price);
+  let url=F.url.trim(); if (url && !/^https?:\/\//i.test(url)) url='https://'+url; if (/\s/.test(url)) url='';
+  const specs={}; for (const [k,v] of Object.entries(F.specs||{})){ const t=String(v||'').trim(); if (t) specs[k]=t; }
+  const rec={name,cat:catOf(F.cat)?F.cat:'',price:price>=0?price:'',shop:F.shop.trim(),url,w:dim(F.w),d:dim(F.d),h:dim(F.h),
+             color:okColor(F.color),note:F.note.trim(),photo,specs,ts:old?old.ts:Date.now()};
+  S.data.furniture[id]=rec; save('furniture/'+id); syncPlaced(id,old,rec);
+  if (F.fileUrl) URL.revokeObjectURL(F.fileUrl);
+  L.form=null;
+  if (L.cat!=='all' && L.cat!==(rec.cat||'none')) L.cat=rec.cat||'none';
+  L.note=photoErr ? '「'+name+'」已儲存，但圖片沒有上傳成功。' : '「'+name+'」已'+(old?'更新':'加入收藏庫')+'。';
+  renderLib();
+}
+function libActions(id, f){
+  return h('div',{class:'row'},
+    h('button',{class:'btn small',type:'button',text:'編輯',onclick:()=>openLibForm(id)}),
+    h('button',{class:'btn small',type:'button',disabled:!hasDims(f),title:hasDims(f)?null:'要先填寬和高才能放到圖上',text:'放到圖上',
+      onclick:()=>go('main',()=>placeItem(specOf(id,f)))}),
+    h('button',{class:'btn small danger',type:'button',text:'刪除',onclick:e=>armDelete(e,'刪除',()=>{
+      if (f.photo) store.removePhoto(f.photo);
+      delete S.data.furniture[id]; save('furniture/'+id);
+      if (L.form && L.form.id===id) L.form=null;
+      L.note='「'+(f.name||'未命名')+'」已刪除。'; renderLib();
+    })}));
+}
+function libLink(f){ return /^https?:\/\//i.test(f.url||'') ? h('a',{href:f.url,target:'_blank',rel:'noopener noreferrer',text:'開啟商品頁'}) : null; }
+function libCard(id, f){
+  const c=catOf(f.cat), src=store.photoUrl(f.photo);
+  const dl=h('dl',{class:'lspec'}), add=(k,v)=>{ if (v) dl.append(h('dt',{text:k}), h('dd',{text:v})); };
+  add('尺寸', sizeText(f)); add('店家', f.shop);
+  for (const sp of specsOf(c)) add(sp.name||'規格', f.specs && f.specs[sp.id]);
+  const link=libLink(f);
+  return h('article',{class:'lcard'},
+    src ? h('img',{class:'lphoto',src,alt:'',loading:'lazy',onerror:e=>e.currentTarget.replaceWith(h('div',{class:'lphoto ph',text:'圖片載入失敗'}))})
+        : h('div',{class:'lphoto ph',text:'沒有圖片'}),
+    h('div',{class:'lbody'},
+      h('div',{class:'lcat',text:c?(c.name||'未命名類別'):'未分類'}),
+      h('h3',{}, okColor(f.color)?h('span',{class:'dot',style:'--c:'+okColor(f.color)}):null, h('span',{text:f.name||'未命名'})),
+      priceText(f)?h('div',{class:'lprice',text:priceText(f)}):null,
+      dl.childNodes.length?dl:null,
+      f.note?h('p',{class:'lnote',text:f.note}):null,
+      link?h('p',{class:'lnote'}, link):null,
+      libActions(id,f)));
+}
+function libTable(list, c){
+  const rows=list.slice().sort((a,b)=>(hasPrice(a[1])?Number(a[1].price):Infinity)-(hasPrice(b[1])?Number(b[1].price):Infinity) || n(a[1].ts)-n(b[1].ts));
+  const priced=rows.filter(e=>hasPrice(e[1])), low=priced.length>1 ? Math.min(...priced.map(e=>Number(e[1].price))) : null;
+  const tr=(label,cell,cls)=>h('tr',{class:cls||null}, h('th',{scope:'row',text:label}), ...rows.map(([id,f])=>{
+    const td=h('td'), x=cell(id,f);
+    if (x instanceof Node) td.append(x); else if (x===''||x==null){ td.textContent='—'; td.className='nil'; } else td.textContent=String(x);
+    return td; }));
+  const num=v=>n(v)>0?fmt(n(v)):'';
+  const body=[
+    tr('圖片',(id,f)=>{ const src=store.photoUrl(f.photo); return src?h('img',{class:'thumb big',src,alt:'',loading:'lazy',onerror:e=>e.currentTarget.remove()}):''; }),
+    tr('名稱',(id,f)=>h('span',{class:'cname'}, okColor(f.color)?h('span',{class:'dot',style:'--c:'+okColor(f.color)}):null, f.name||'未命名'),'hd'),
+    tr('價格',(id,f)=>hasPrice(f)?h('span',{class:'num'+(low!==null && Number(f.price)===low?' min':''),text:priceText(f)+(low!==null && Number(f.price)===low?'（最低）':'')}):''),
+    tr('店家／品牌',(id,f)=>f.shop),
+    tr('寬',(id,f)=>num(f.w)), tr('深',(id,f)=>num(f.d)), tr('高',(id,f)=>num(f.h))
+  ];
+  if (c) for (const sp of specsOf(c)) body.push(tr(sp.name||'規格',(id,f)=>f.specs && f.specs[sp.id]));
+  else body.push(tr('類別',(id,f)=>{ const k=catOf(f.cat); return k?(k.name||'未命名類別'):'未分類'; }));
+  body.push(tr('備註',(id,f)=>f.note), tr('連結',(id,f)=>libLink(f)||''), tr('',(id,f)=>libActions(id,f),'act'));
+  return h('div',{class:'cmpwrap'}, h('table',{class:'cmp'}, h('tbody',{}, ...body)));
+}
+function renderLibBody(){
+  const box=$('#libBody'), list=libItems(), c=catOf(L.cat);
+  $('#libModeCards').setAttribute('aria-pressed',String(L.mode==='cards'));
+  $('#libModeTable').setAttribute('aria-pressed',String(L.mode==='table'));
+  $('#libCount').textContent=(L.cat==='all'?'全部':L.cat==='none'?'未分類':((c && c.name)||'未命名類別'))+'：'+list.length+' 件';
+  const note=$('#libNote'); note.hidden=!L.note; note.textContent=L.note||'';
+  if (!list.length){
+    box.replaceChildren(h('p',{class:'empty',text: furnAll().length ? '這個類別還沒有東西，按「＋ 新增家具擺飾」加入第一件。'
+      : '收藏庫還是空的。可以先按「＋ 新增類別」建立類別（例如檯燈、椅子），再按「＋ 新增家具擺飾」把看中的東西記下來。'}));
+    return;
+  }
+  if (L.mode==='table'){
+    const kids=[];
+    if (!c) kids.push(h('p',{class:'small-note',style:'margin:0 0 8px',text:'選一個類別再看比較表，會多出那個類別自訂的規格項目。'}));
+    kids.push(libTable(list,c)); box.replaceChildren(...kids);
+  } else box.replaceChildren(h('div',{class:'libgrid'}, ...list.slice().sort((a,b)=>n(b[1].ts)-n(a[1].ts)).map(([id,f])=>libCard(id,f))));
+}
+// 別人改了資料時更新畫面；正在輸入的區塊不重畫
+function renderLibRemote(){
+  renderLibCats(); renderLibBody();
+  if (!$('#libTools').contains(document.activeElement)) renderLibTools();
+}
+$('#openLib').addEventListener('click', ()=>go('lib'));
+$('#libBack').addEventListener('click', ()=>go('main'));
+$('#libAdd').addEventListener('click', ()=>openLibForm(null));
+$('#libModeCards').addEventListener('click', ()=>{ L.mode='cards'; renderLibBody(); });
+$('#libModeTable').addEventListener('click', ()=>{ L.mode='table'; renderLibBody(); });
 
 /* ---------- 工具列、分頁 ---------- */
 function setTab(t){
@@ -1061,6 +1360,7 @@ function refreshFromRemote(){
     fixSelection(); renderNav(); renderStage();
     if (!$('#editor').contains(document.activeElement)) renderEditor(); else renderReadout();
     if (S.tab==='furn'){ renderResults(); renderSaved(); } else renderList();
+    if (S.screen==='lib') renderLibRemote();
   },60);
 }
 function applyRemote(path, doc){ applyDoc(S.data, path, doc); refreshFromRemote(); }
@@ -1089,11 +1389,11 @@ async function connect(){
   fixSelection(); loading=false; syncErr=false;
   for (const p of writes) flush(p);
   showNote(store.remote?'':'尚未連上共用資料庫：現在填寫的內容只會存在這台裝置的瀏覽器，其他人看不到。');
-  setSync(); renderAll();
+  setSync(); renderAll(); if (S.screen==='lib') renderLib();
   store.listen(applyRemote, reloadAll, ok=>{ online=ok; setSync(); });
 }
 (function init(){
-  S.data={}; mergeSeed(S.data); fixSelection(); setSync(); renderAll(); renderFormExtras(); connect();
+  S.data={}; mergeSeed(S.data); fixSelection(); setSync(); renderAll(); renderFormExtras(); applyScreen(); connect();
 })();
 </script>
 </body>
