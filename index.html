@@ -635,15 +635,19 @@ function setSync(){
   el.className='sync '+cls;
   el.replaceChildren(h('span',{class:'lg',text:txt}), h('span',{class:'sm',text:short}));
 }
+// busy：正在送出的路徑；tomb：剛刪除的路徑和它的到期時間。
+// 雲端的更新訊息可能比本機的操作晚到，這兩個用來擋掉「過期的訊息把剛做的修改或刪除蓋回去」。
+const busy=new Set(), tomb=new Map();
 function save(path){
+  if (getAt(S.data, path)===undefined) tomb.set(path, Date.now()+10000); else tomb.delete(path);
   clearTimeout(pending.get(path));
   pending.set(path, setTimeout(()=>{ pending.delete(path); flush(path); }, 350));
   setSync();
 }
 async function flush(path){
-  inflight++;
+  inflight++; busy.add(path);
   try { await store.set(path, getAt(S.data, path)); syncErr=false; } catch(e){ syncErr=true; }
-  inflight--; setSync();
+  busy.delete(path); inflight--; setSync();
 }
 function mergeSeed(data){
   const writes=[];
@@ -1593,7 +1597,12 @@ function refreshFromRemote(){
     if (S.screen==='lib') renderLibRemote();
   },60);
 }
-function applyRemote(path, doc){ applyDoc(S.data, path, doc); refreshFromRemote(); }
+function applyRemote(path, doc){
+  const p=String(path||'');
+  if (pending.has(p) || busy.has(p)) return;                         // 這一筆本機正在改，以本機為準
+  if (doc!=null && (tomb.get(p)||0)>Date.now()) return;              // 剛刪掉的，不讓晚到的舊訊息把它加回來
+  applyDoc(S.data, p, doc); refreshFromRemote();
+}
 async function reloadAll(){
   if (loading || pending.size || inflight || (drag && drag.on)) return;
   try {
